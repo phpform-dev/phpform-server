@@ -1,0 +1,17 @@
+admin:
+    resource:
+        path: ../src/Admin/Controller/
+        namespace: App\Admin\Controller
+    type: attribute
+
+public-api:
+    resource:
+        path: ../src/PublicApi/Controller/
+        namespace: App\PublicApi\Controller
+    type: attribute
+
+main:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute

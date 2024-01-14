@@ -1,0 +1,5 @@
+twig:
+  paths:
+    '%kernel.project_dir%/src/Admin/Resources/templates': Admin
+
+  form_themes: ['@Admin/bulma_theme.html.twig']

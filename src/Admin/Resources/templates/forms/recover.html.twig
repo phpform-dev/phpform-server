@@ -1,0 +1,25 @@
+{% extends '@Admin/forms/page.html.twig' %}
+
+{% block title %}Recover / {{ formEntity.name }} / Forms{% endblock %}
+
+{% block section %}
+    <div class="card">
+        <header class="card-header">
+            <p class="card-header-title">
+                Recover Form
+            </p>
+        </header>
+        <div class="card-content">
+            <div class="content">
+                <p>Are you sure you want to recover the form "<strong>{{ formEntity.name }}</strong>"?</p>
+                <form action="{{ path('admin_forms_recover', { 'id': formEntity.id }) }}" method="post">
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button class="button is-danger" type="submit">Recover form</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

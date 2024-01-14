@@ -1,0 +1,24 @@
+{% extends '@Admin/forms/page.html.twig' %}
+
+{% block title %}API / {{ formEntity.name }} / Forms{% endblock %}
+
+{% block section %}
+    <div class="card">
+        <header class="card-header">
+            <p class="card-header-title">
+                Edit Form
+            </p>
+        </header>
+        <div class="card-content">
+            <div class="content">
+                <form method="post">
+                    {{ form_start(form) }}
+                    {{ form_row(form.name) }}
+                    {{ form_row(form.recaptcha_token) }}
+                    {{ form_row(form.create) }}
+                    {{ form_end(form) }}
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

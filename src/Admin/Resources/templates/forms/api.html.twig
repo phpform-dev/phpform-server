@@ -1,0 +1,76 @@
+{% extends '@Admin/forms/page.html.twig' %}
+
+{% block title %}API / {{ formEntity.name }} / Forms{% endblock %}
+
+{% block section %}
+    <div class="card">
+        <header class="card-header">
+            <p class="card-header-title">
+                API Key
+            </p>
+        </header>
+        <div class="card-content">
+            <div class="content">
+                <label>
+                    <input type="text" class="input" value="{{ formEntity.hash }}">
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="card mt-4">
+        <header class="card-header">
+            <p class="card-header-title">
+                How to use
+            </p>
+        </header>
+        <div class="card-content" x-data="checkApi">
+            <div class="content" x-init="check">
+                <div>
+                    <apan class="tag is-info">GET</apan> {{ app.request.getSchemeAndHttpHost() }}{{ path('public_api_form', { 'hash': formEntity.hash }) }}
+                </div>
+                <div x-show="loading">
+                    <div class="mt-5 is-flex is-justify-content-center is-align-items-center">
+                        <div class="loader mr-2"></div>
+                        Checking status...
+                    </div>
+                </div>
+                <div x-show="!loading" style="display: none;">
+                    <h6 class="mt-5">Response</h6>
+                    <div style="overflow-y: auto; max-height: 500px;">
+                        <pre x-text="getResponseExample"></pre>
+                    </div>
+                    <div class="mt-6">
+                        <apan class="tag is-success">POST</apan> {{ app.request.getSchemeAndHttpHost() }}{{ path('public_api_form', { 'hash': formEntity.hash }) }}
+                    </div>
+                    <h6 class="mt-5">Body</h6>
+                    <div style="overflow-y: auto; max-height: 500px;">
+                        <pre x-text="postRequestExample"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function checkApi() {
+            return {
+                loading: true,
+                response: null,
+                getResponseExample: '',
+                postRequestExample: '',
+
+                async check() {
+                    const response = await fetch('{{ app.request.getSchemeAndHttpHost() }}{{ path('public_api_form', { 'hash': formEntity.hash }) }}');
+                    this.response = await response.json();
+                    this.getResponseExample = JSON.stringify(this.response, null, 2);
+                    const postRequest = {};
+                    this.response.fields.forEach(field => {
+                        postRequest[field.name] = field.type === 'options' ? [ '...', '...' ] : '...';
+                    });
+                    this.postRequestExample = JSON.stringify(postRequest, null, 2);
+                    this.loading = false;
+                }
+            }
+        }
+    </script>
+{% endblock %}

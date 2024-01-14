@@ -1,0 +1,26 @@
+{% extends '@Admin/forms/page.html.twig' %}
+
+{% block title %}Delete / {{ formFieldEntity.label }} / {{ formEntity.name }} / Forms{% endblock %}
+
+{% block section %}
+    <div class="card">
+        <header class="card-header">
+            <p class="card-header-title">
+                Deleting form field
+            </p>
+        </header>
+        <div class="card-content">
+            <div class="content">
+                <p>Are you sure you want to delete the field "<strong>{{ formFieldEntity.label }}</strong>" of the form "<strong>{{ formEntity.name }}</strong>"?</p>
+                <p>This action cannot be undone.</p>
+                <form action="{{ path('admin_forms_fields_delete', { 'id': formEntity.id, 'fieldId': formFieldEntity.id }) }}" method="post">
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button class="button is-danger" type="submit">Remove the field from the form</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

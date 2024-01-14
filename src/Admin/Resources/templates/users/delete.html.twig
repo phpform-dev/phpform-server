@@ -1,0 +1,32 @@
+{% extends '@Admin/account.html.twig' %}
+
+{% block title %}Delete User{% endblock %}
+
+{% block body %}
+    <div class="columns">
+        <div class="column is-half is-offset-one-quarter">
+            <div class="card mt-5 is-danger">
+                <header class="card-header">
+                    <p class="card-header-title">
+                        Remove the user
+                    </p>
+                </header>
+                <div class="card-content">
+                    <div class="content">
+                        <p>Are you sure you want to remove the user <strong>{{ user.name }}</strong>?</p>
+                        <form action="{{ path('admin_users_delete', { 'id': user.id }) }}" method="post">
+                            <div class="field is-grouped">
+                                <div class="control">
+                                    <button class="button is-danger" type="submit">Remove</button>
+                                </div>
+                                <div class="control">
+                                    <a class="button is-light" href="{{ path('admin_users') }}">Cancel</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

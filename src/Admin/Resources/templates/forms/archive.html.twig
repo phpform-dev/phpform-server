@@ -1,0 +1,27 @@
+{% extends '@Admin/forms/page.html.twig' %}
+
+{% block title %}Archive / {{ formEntity.name }} / Forms{% endblock %}
+
+{% block section %}
+    <div class="card">
+        <header class="card-header">
+            <p class="card-header-title">
+                Archive Form
+            </p>
+        </header>
+        <div class="card-content">
+            <div class="content">
+                <p>Are you sure you want to archive the form "<strong>{{ formEntity.name }}</strong>"?</p>
+                <p>This will remove the form from the list of forms, but will not delete any data that has been submitted.</p>
+                <p>You can recover the form at any time.</p>
+                <form action="{{ path('admin_forms_archive', { 'id': formEntity.id }) }}" method="post">
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button class="button is-danger" type="submit">Archive form</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

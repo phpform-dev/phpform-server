@@ -1,0 +1,46 @@
+{% extends '@Admin/account.html.twig' %}
+
+{% block title %}Edit User{% endblock %}
+
+{% block body %}
+    <div class="columns">
+        <div class="column is-half is-offset-one-quarter">
+            <div class="card mt-5">
+                <header class="card-header">
+                    <p class="card-header-title">
+                        Edit user
+                    </p>
+                </header>
+                <div class="card-content">
+                    <div class="content">
+                        <form method="post" x-data="{ isPermissionsOpen: {{ user.isSuperuser ? 'false' : 'true' }}}">
+                            {{ form_start(form) }}
+                            {{ form_row(form.name) }}
+                            {{ form_row(form.email) }}
+                            {{ form_row(form.password) }}
+                            {% if user.id != app.user.id %}
+                                <div>
+                                    {{ form_widget(form.is_superuser) }}
+                                </div>
+                                <div class="mt-4" x-show="isPermissionsOpen"{% if user.isSuperuser %} style="display: none;"{% endif %}>
+                                    <h6>Permissions</h6>
+                                    {% for permission in forms %}
+
+                                        <div>
+                                            <input type="checkbox" name="permissions[]" value="{{ permission.id }}" id="{{ permission.id }}"{% if user.permissions|filter(v => v.form.id == permission.id)|length > 0 %} checked{% endif %}>
+                                            <label for="{{ permission.id }}">{{ permission.name }}</label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="mt-5">
+                                {{ form_row(form.save) }}
+                            </div>
+                            {{ form_end(form) }}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

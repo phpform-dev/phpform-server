@@ -1,0 +1,227 @@
+{% set hint = 'You can put values from the previous steps if you use <a href="https://flexform.dev/#components" target="_blank">flexform frontend components</a>. Example: Hello {username}, please tell us your email.' %}
+
+<form x-data="form()" @submit.prevent="submitForm">
+    <ul x-show="errors.length > 0" class="notification is-danger" style="display: none;">
+        <template x-for="(e, i) in errors" :key="i">
+            <li>
+                <span x-show="e.property && e.property.length > 0">
+                    <b x-text="e.property.toUpperCase()"></b>:&nbsp;
+                </span>
+                <span x-text="e.message"></span>
+            </li>
+        </template>
+    </ul>
+    <div class="field">
+        <label class="label">Name</label>
+        <div class="control">
+            <input class="input" type="text" placeholder="Name" required maxlength="50" x-model="formData.name" :disabled="loading">
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label">Label</label>
+        <div class="control">
+            <input class="input" type="text" placeholder="Label" required maxlength="100" x-model="formData.label" :disabled="loading">
+            <div class="help">{{ hint|raw }}</div>
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label">Hint</label>
+        <div class="control">
+            <input class="input" type="text" placeholder="Hint" maxlength="255" x-model="formData.hint" :disabled="loading">
+            <div class="help">{{ hint|raw }}</div>
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="checkbox">
+            <input type="checkbox" x-model="formData.isRequired" :disabled="loading">
+            Is Required
+        </label>
+    </div>
+
+    <div x-init="fetchTypes" class="mb-4 mt-4">
+          <div class="buttons">
+            <template x-for="type in types" :key="type.type">
+            <button 
+                class="button" 
+                :class="{ 'is-primary': selectedType === type.type }"
+                @click="selectType(type.type)"
+                type="button"
+                x-text="type.type">
+            </button>
+            </template>
+        </div>
+
+        <input type="hidden" x-model="selectedType">
+
+        <div x-html="dynamicFields"></div>
+    </div>
+
+    <div class="field">
+        <button class="button is-primary" :class="{'is-loading': loading}" :disabled="loading" type="submit">
+            {{ formFieldEntity is defined ? 'Update' : 'Create' }} Field
+        </button>
+    </div>
+</form>
+
+<script>
+    function form() {
+
+        let formFieldEntity = {};
+        let validations = {};
+
+        {% if formFieldEntity is defined %}
+
+        formFieldEntity = {{ formFieldEntity.toArray()|json_encode(constant('JSON_PRETTY_PRINT'))|raw }};
+
+        if (formFieldEntity.validations === undefined) {
+            formFieldEntity.validations = [];
+        }
+
+        validations = formFieldEntity.validations.reduce((acc, v) => {
+            acc[v.name] = Array.isArray(v.value) ? v.value.join("\n") : v.value;
+            return acc;
+        }, {});
+
+        {% endif %}
+
+        return {
+            types: [],
+            selectedType: formFieldEntity?.type ?? '',
+            dynamicFields: '',
+            loading: true,
+            formData: {
+                id: formFieldEntity?.id ?? null,
+                name: formFieldEntity?.name ?? '',
+                label: formFieldEntity?.label ?? '',
+                hint: formFieldEntity?.hint ?? '',
+                isRequired: formFieldEntity?.isRequired ?? false,
+                type: formFieldEntity?.type ?? '',
+                validations: validations ?? {}
+            },
+            errors: [],
+
+            submitForm() {
+                this.loading = true;
+                this.errors = [];
+
+                const dataToSend = Object.assign({}, this.formData);
+                const validations = [];
+                for (const [key, value] of Object.entries(dataToSend.validations)) {
+                    validations.push({
+                        name: key,
+                        type: this.types.find(t => t.type === this.selectedType).params.find(p => p.name === key).type,
+                        value: key === 'options' ? value.split("\n") : value
+                    });
+                    validations[key] = key === 'options' ? value.split("\n") : value;
+                }
+                dataToSend.validations = validations;
+
+                const endpoint = this.formData.id ? `/admin/forms/{{formEntity.id}}/fields/${this.formData.id}/edit` : '/admin/api/forms/{{formEntity.id}}/fields';
+
+                fetch(endpoint, {
+                    method: this.formData.id ? 'PUT' : 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(dataToSend)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.errors) {
+                            for (const [key, value] of Object.entries(data.errors)) {
+                                this.errors.push({ property: value.property, message: value.message });
+                            }
+                        } else {
+                            if (this.formData.id) {
+                                document.location.href = '{{ path("admin_forms_fields", { id: formEntity.id }) }}';
+                            } else {
+                                this.resetForm();
+                                this.$dispatch('field-added');
+                            }
+                        }
+                    })
+                    .catch(async (errorResponse) => {
+                        if (errorResponse.json) {
+                            const errorData = await errorResponse.json();
+                            this.errors = errorData.errors || [];
+                        } else {
+                            this.errors = [{ message: "An unexpected error occurred." }];
+                        }
+                    })
+                    .finally(() => {
+                        this.loading = false;
+                    });
+            },
+
+            resetForm() {
+                this.formData = {
+                    name: '',
+                    label: '',
+                    hint: '',
+                    isRequired: false,
+                    type: '',
+                    validations: {}
+                };
+                this.selectedType = '';
+                this.dynamicFields = '';
+                this.errors = [];
+            },
+
+            fetchTypes() {
+                fetch('/admin/api/forms/fields/types')
+                    .then(response => response.json())
+                    .then(data => {
+                        this.types = data.data.types;
+                        if (this.selectedType === '' && this.types.length > 0) {
+                            this.selectedType = data.data.types[0].type;
+                            this.formData.type = this.selectedType;
+                        }
+                        this.updateParams();
+                    }).finally(() => {
+                        this.loading = false;
+                    });
+            },
+
+            selectType(type) {
+                this.selectedType = type;
+                this.updateParams();
+            },
+
+
+            updateParams() {
+                const type = this.types.find(t => t.type === this.selectedType);
+                if (type && type.params.length > 0) {
+                    this.dynamicFields = this.renderParamsFields(type.params);
+                } else {
+                    this.dynamicFields = '';
+                }
+                this.formData.type = this.selectedType;
+            },
+
+            renderParamsFields(params) {
+                return params.map(param => {
+                    const beautifyName = param.name.replace(/([A-Z])/g, ' $1').replace(/^./, function (str) {
+                        return str.toUpperCase();
+                    });
+                    return `
+          <div class="field">
+            <label class="label">${beautifyName}</label>
+            <div class="control">
+              ${param.type !== 'array' ? `
+                   <input class="input" type="text" placeholder="${param.name}" x-model="formData.validations['${param.name}']" :disabled="loading">
+                ` : `
+                    <textarea class="textarea" placeholder="${param.name}" x-model="formData.validations['${param.name}']" :disabled="loading"></textarea>
+                    <p class="help">Please specify as many options as you want. Each options on a new line.</p>
+                ` }
+            </div>
+          </div>
+        `;
+                }).join('');
+            }
+        };
+    }
+</script>
+

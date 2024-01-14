@@ -1,0 +1,128 @@
+{% extends '@Admin/forms/page.html.twig' %}
+
+{% block title %}Fields / {{ formEntity.name }} / Forms{% endblock %}
+
+{% block section %}
+    <div x-data="fieldList()" @field-added.window="fetchFields" x-init="fetchFields" class="container">
+        <div x-show="loading">
+            <div class="box is-flex is-justify-content-center">
+                <div class="loader"></div>
+            </div>
+        </div>
+        <template x-for="(field, fieldIndex) in fields" :key="field.id">
+            <div class="box">
+                <div class="is-flex is-justify-content-space-between">
+                    <div>
+                        <div class="is-flex">
+                            <h5 x-text="field.name" class="mr-2"></h5>
+                            <span class="tag is-warning is-light" x-text="field.type"></span>
+                        </div>
+                        <div class="mb-2 is-size-7">
+                            <p>
+                                Label: <span x-text="field.label"></span>
+                            </p>
+                            <p x-show="field.hint.length> 0">
+                                Hint: <span x-text="field.hint"></span>
+                            </p>
+                        </div>
+                        <div class="mb-3">
+                            <span x-show="field.isRequired" class="tag is-primary is-light mr-2">required</span>
+                            <template x-for="param in field.validations" :key="param.name">
+                                <span class="tag is-primary is-light mr-2" x-text="param.name + ': ' + formatValue(param.value)"></span>
+                            </template>
+                        </div>
+                        <div>
+                            <a class="tag is-rounded py-2 has-background-primary-light hoverable" :href="`/admin/forms/{{formEntity.id}}/fields/${field.id}/edit`" title="Edit">
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:16px; height: 16px;"><rect fill="#464646" height="6" rx="2" width="6" x="2" y="6"/><rect fill="#464646" height="6" rx="2" width="6" x="9" y="12"/><rect fill="#464646" height="6" rx="2" width="6" x="16" y="7"/><rect fill="#464646" height="2" width="2" x="4" y="2"/><rect fill="#464646" height="8" width="2" x="4" y="14"/><rect fill="#464646" height="2" width="2" x="11" y="20"/><rect fill="#464646" height="8" width="2" x="11" y="2"/><rect fill="#464646" height="3" width="2" x="18" y="2"/><rect fill="#464646" height="7" width="2" x="18" y="15"/></svg>
+                            </a>
+                            <a class="tag is-rounded py-2 has-background-danger-light hoverable" :href="`/admin/forms/{{formEntity.id}}/fields/${field.id}/delete`" title="Delete">
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:16px; height: 16px;"><title/><path d="M21,6a1,1,0,0,1-1,1H4A1,1,0,0,1,4,5H9V4.5A1.5,1.5,0,0,1,10.5,3h3A1.5,1.5,0,0,1,15,4.5V5h5A1,1,0,0,1,21,6Z" fill="#464646"/><path d="M5.5,9v9.5A2.5,2.5,0,0,0,8,21h8a2.5,2.5,0,0,0,2.5-2.5V9ZM11,17a1,1,0,0,1-2,0V13a1,1,0,0,1,2,0Zm4,0a1,1,0,0,1-2,0V13a1,1,0,0,1,2,0Z" fill="#464646"/></svg>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="is-flex is-flex-direction-column is-justify-content-space-between is-align-content-space-between">
+                        <a x-show="fieldIndex > 0" class="tag is-rounded py-2 hoverable" @click="() => moveUp(fieldIndex)">
+                            <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" style="width:18px; height:18px;" fill="hsl(0, 0%, 48%)">
+                                <path d="M14.83 30.83l9.17-9.17 9.17 9.17 2.83-2.83-12-12-12 12z" />
+                                <path d="M0 0h48v48h-48z" fill="none" />
+                            </svg>
+                        </a>
+                        <span x-show="fieldIndex === 0"></span>
+                        <a x-show="fieldIndex < fields.length - 1" class="tag is-rounded py-2 hoverable"  @click="() => moveDown(fieldIndex)">
+                            <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" style="width:18px; height:18px;" fill="hsl(0, 0%, 48%)">
+                                <path d="M14.83 16.42l9.17 9.17 9.17-9.17 2.83 2.83-12 12-12-12z"/>
+                                <path d="M0-.75h48v48h-48z" fill="none"/>
+                            </svg>
+                        </a>
+                        <span x-show="fieldIndex === fields.length - 1"></span>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+    <div class="card mt-4">
+        <header class="card-header">
+            <p class="card-header-title">
+                Add field
+            </p>
+        </header>
+        <div class="card-content">
+            {{ include('@Admin/partials/form_field_form.html.twig', {formEntity: formEntity}) }}
+        </div>
+    </div>
+
+    <script>
+        function fieldList() {
+            return {
+                fields: [],
+                loading: true,
+
+                fetchFields() {
+                    fetch('/admin/api/forms/{{formEntity.id}}/fields')
+                        .then(response => response.json())
+                        .then(data => {
+                            this.fields = data.data;
+                        }).finally(() => {
+                            this.loading = false;
+                        });
+                },
+
+                moveUp(index) {
+                    let field = this.fields[index];
+                    this.fields.splice(index, 1);
+                    this.fields.splice(index - 1, 0, field);
+
+                    fetch(`/admin/api/forms/{{formEntity.id}}/fields/${field.id}/move-up`)
+                        .then(response => response.json());
+                },
+
+                moveDown(index) {
+                    let field = this.fields[index];
+                    this.fields.splice(index, 1);
+                    this.fields.splice(index + 1, 0, field);
+
+                    fetch(`/admin/api/forms/{{formEntity.id}}/fields/${field.id}/move-down`)
+                        .then(response => response.json());
+                },
+
+                formatValue(value) {
+                    if (value === null) {
+                        return '---';
+                    }
+
+                    if (Array.isArray(value)) {
+                        return value.join(', ');
+                    }
+
+                    return value;
+                }
+            };
+        }
+    </script>
+
+    <style>
+        .box a.hoverable:hover {
+            opacity: 0.5;
+        }
+    </style>
+{% endblock %}

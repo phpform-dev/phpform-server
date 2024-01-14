@@ -1,0 +1,28 @@
+{% extends '@Admin/base.html.twig' %}
+
+{% block title %}Admin Setup{% endblock %}
+
+{% block body %}
+    <div class="columns">
+        <div class="column is-one-third is-offset-one-third">
+            <div class="card mt-5">
+                <header class="card-header">
+                    <p class="card-header-title">
+                        Setup Admin
+                    </p>
+                </header>
+                <div class="card-content">
+                    <div class="content">
+                        {{ form_start(adminForm) }}
+                        {{ form_row(adminForm.email) }}
+                        {{ form_row(adminForm.name) }}
+                        {{ form_row(adminForm.password.first) }}
+                        {{ form_row(adminForm.password.second) }}
+                        {{ form_row(adminForm.save) }}
+                        {{ form_end(adminForm) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

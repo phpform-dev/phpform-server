@@ -1,0 +1,30 @@
+{% extends '@Admin/base.html.twig' %}
+
+{% block body %}
+    <div class="columns">
+        <div class="column is-one-third is-offset-one-third">
+        <div class="card mt-5">
+            <header class="card-header">
+                <p class="card-header-title">
+                    Login
+                </p>
+            </header>
+            <div class="card-content">
+                <div class="content">
+                    {% if error %}
+                        <article class="message is-danger">
+                            <div class="message-body">
+                                {{ error.messageKey|trans(error.messageData, 'security') }}
+                            </div>
+                        </article>
+                    {% endif %}
+                    {{ form_start(form) }}
+                    {{ form_row(form.email) }}
+                    {{ form_row(form.password) }}
+                    {{ form_row(form.login) }}
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

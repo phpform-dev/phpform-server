@@ -1,0 +1,84 @@
+{% set current_path = app.request.get('_route') %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body class="p-5 container is-max-desktop">
+        <nav class="navbar" role="navigation" aria-label="main navigation">
+            <div class="navbar-brand">
+                <a class="navbar-item" href="{{ path('admin_forms') }}">
+                    <img src="/images/logo_small.svg">
+                </a>
+
+                <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar">
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                </a>
+            </div>
+
+            <div id="navbar" class="navbar-menu">
+                <div class="navbar-start">
+                    <a
+                        class="navbar-item {{ current_path starts with 'admin_forms' ? 'is-tab is-active' : '' }}"
+                        href="{{ path('admin_forms') }}"
+                    >
+                        Forms
+                    </a>
+
+                    {% if app.user.isSuperUser %}
+                        <a
+                            class="navbar-item {{ current_path starts with 'admin_users' ? 'is-tab is-active' : '' }}"
+                            href="{{ path('admin_users') }}"
+                        >
+                            Users
+                        </a>
+                    {% endif %}
+
+                    <div class="navbar-item has-dropdown is-hoverable">
+                        <a class="navbar-link">
+                            About
+                        </a>
+
+                        <div class="navbar-dropdown">
+                            <span class="navbar-item">
+                                Version: 0.1.0
+                            </span>
+                            <a class="navbar-item" href="https://flexform.dev" target="_blank">
+                                Website
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="navbar-end">
+                    <div class="navbar-item">
+                        <div class="buttons">
+                            <a class="button is-light" href="{{ path('admin_logout') }}">
+                                Log out
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="notification is-{{ type }} mt-5" x-data="{ open: true }" x-show="open">
+                    <button class="delete" @click="open = false"></button>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+        <div>
+            {% block body %}{% endblock %}
+        </div>
+
+        <script src="//unpkg.com/alpinejs" defer></script>
+    </body>
+</html>

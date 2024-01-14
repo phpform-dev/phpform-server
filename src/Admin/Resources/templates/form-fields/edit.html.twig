@@ -1,0 +1,18 @@
+{% extends '@Admin/forms/page.html.twig' %}
+
+{% block title %}Edit / {{ formFieldEntity.label }} / {{ formEntity.name }} / Forms{% endblock %}
+
+{% block section %}
+    <div class="card">
+        <header class="card-header">
+            <p class="card-header-title">
+                Edit form field
+            </p>
+        </header>
+        <div class="card-content">
+            <div class="content">
+                {{ include('@Admin/partials/form_field_form.html.twig', { formEntity: formEntity, formFieldEntity: formFieldEntity }) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

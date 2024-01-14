@@ -1,0 +1,60 @@
+{% extends '@Admin/account.html.twig' %}
+
+{% block title %}Users{% endblock %}
+
+{% block body %}
+    <table class="table is-bordered is-striped is-narrow is-hoverable mt-5">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Access</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.name }}</td>
+                <td>{{ user.email }}</td>
+                <td>
+                    {% if user.isSuperuser %}
+                        <span class="tag is-light">Admin</span>
+                    {% else %}
+                        <span class="tag is-warning">User</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if user.isSuperuser %}
+                        <span class="tag is-warning is-light">All forms</span>
+                    {% else %}
+                        {% if user.permissions|length > 0 %}
+                            {% for userPermission in user.permissions %}
+                                <span class="tag is-info is-light">{{ userPermission.form.name }}</span>
+                            {% endfor %}
+                        {% else %}
+                            <span class="tag is-danger is-light">No access</span>
+                        {% endif %}
+                    {% endif %}
+                <td nowrap>
+                    <a href="{{ path('admin_users_edit', { id: user.id }) }}" class="button is-light is-small">Edit</a>
+                    {% if user.id != app.user.id %}
+                        <a href="{{ path('admin_users_delete', { id: user.id }) }}" class="button is-light is-small is-danger">Delete</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if app.user.isSuperUser %}
+        <div class="columns">
+            <div class="column">
+                <a href="{{ path('admin_users_create') }}" class="button is-primary">Add new user</a>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

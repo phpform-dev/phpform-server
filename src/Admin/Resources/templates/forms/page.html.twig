@@ -1,0 +1,112 @@
+{% extends '@Admin/account.html.twig' %}
+
+{% block title %}PAGE{% endblock %}
+
+{% set current_path = app.request.get('_route') %}
+
+{% block body %}
+    <div class="columns mt-5">
+        <div class="column is-one-third">
+            <aside class="menu">
+                <p class="menu-label">
+                    Submissions
+                </p>
+                <ul class="menu-list">
+                    <li>
+                        <a
+                            href="{{ path('admin_forms_submissions_new', {'id': formEntity.id}) }}"
+                            class="{% if current_path == 'admin_forms_submissions_new' %}is-active{% endif %}"
+                        >
+                            New ({{ menuCounts.submissions.new }})
+                        </a>
+                        <a
+                            href="{{ path('admin_forms_submissions', {'id': formEntity.id}) }}"
+                            {% if current_path == 'admin_forms_submissions' %}
+                                class="is-active"
+                            {% endif %}
+                        >
+                            All ({{ menuCounts.submissions.active }})
+                        </a>
+                        <a
+                            href="{{ path('admin_forms_submissions_flagged', {'id': formEntity.id}) }}"
+                            {% if current_path == 'admin_forms_submissions_flagged' %}
+                                class="is-active"
+                            {% endif %}
+                        >
+                            Flagged ({{ menuCounts.submissions.flagged }})
+                        </a>
+                        <a
+                            href="{{ path('admin_forms_submissions_deleted', {'id': formEntity.id}) }}"
+                            {% if current_path == 'admin_forms_submissions_deleted' %}
+                                class="is-active"
+                            {% endif %}
+                        >
+                            Deleted ({{ menuCounts.submissions.deleted }})
+                        </a>
+                    </li>
+                </ul>
+                <p class="menu-label">
+                    Settings
+                </p>
+                <ul class="menu-list">
+                    <li>
+                        <a
+                            {% if current_path == 'admin_forms_info' %}
+                                class="is-active"
+                            {% endif %}
+                            href="{{ path('admin_forms_info', {'id': formEntity.id}) }}"
+                        >
+                            API Credentials
+                        </a>
+                    </li>
+                    {% if app.user.isSuperUser %}
+                        <li>
+                            <a
+                                {% if current_path == 'admin_forms_edit' %}
+                                    class="is-active"
+                                {% endif %}
+                                href="{{ path('admin_forms_edit', {'id': formEntity.id}) }}"
+                            >
+                                Edit
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                {% if current_path starts with 'admin_forms_fields' %}
+                                    class="is-active"
+                                {% endif %}
+                                href="{{ path('admin_forms_fields', {'id': formEntity.id}) }}"
+                            >
+                                Fields ({{ menuCounts.fields }})
+                            </a>
+                        </li>
+                        <li>
+                            {% if formEntity.deletedAt == null %}
+                                <a
+                                    {% if current_path == 'admin_forms_archive' %}
+                                        class="is-active"
+                                    {% endif %}
+                                    href="{{ path('admin_forms_archive', {'id': formEntity.id}) }}"
+                                >
+                                    Archive
+                                </a>
+                            {% else %}
+                                <a
+                                    {% if current_path == 'admin_forms_recover' %}
+                                        class="is-active"
+                                    {% endif %}
+                                    href="{{ path('admin_forms_recover', {'id': formEntity.id}) }}"
+                                >
+                                    Recovery
+                                </a>
+                            {% endif %}
+                        </li>
+                    {% endif %}
+                </ul>
+            </aside>
+        </div>
+        <div class="column is-two-third">
+            {% block section %}{% endblock %}
+        </div>
+    </div>
+{% endblock %}

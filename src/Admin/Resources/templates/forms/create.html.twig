@@ -1,0 +1,28 @@
+{% extends '@Admin/account.html.twig' %}
+
+{% block title %}Create / Forms{% endblock %}
+
+{% block body %}
+    <div class="columns">
+        <div class="column is-half is-offset-one-quarter">
+        <div class="card mt-5">
+            <header class="card-header">
+                <p class="card-header-title">
+                    Create a new form
+                </p>
+            </header>
+            <div class="card-content">
+                <div class="content">
+                    <form method="post">
+                        {{ form_start(form) }}
+                        {{ form_row(form.name) }}
+                        {{ form_row(form.recaptcha_token) }}
+                        {{ form_row(form.create) }}
+                        {{ form_end(form) }}
+                    </form>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+{% endblock %}

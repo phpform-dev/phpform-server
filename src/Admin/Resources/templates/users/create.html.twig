@@ -1,0 +1,44 @@
+{% extends '@Admin/account.html.twig' %}
+
+{% block title %}Create User{% endblock %}
+
+{% block body %}
+    <div class="columns">
+        <div class="column is-half is-offset-one-quarter">
+            <div class="card mt-5">
+                <header class="card-header">
+                    <p class="card-header-title">
+                        Create a new user
+                    </p>
+                </header>
+                <div class="card-content">
+                    <div class="content">
+                        <form method="post" x-data="{ isPermissionsOpen: true}">
+                            {{ form_start(form) }}
+                            {{ form_row(form.name) }}
+                            {{ form_row(form.email) }}
+                            {{ form_row(form.password) }}
+                            <div>
+                                {{ form_widget(form.is_superuser) }}
+                            </div>
+                            <div class="mt-4" x-show="isPermissionsOpen">
+                                <h6>Permissions</h6>
+                                {% for permission in forms %}
+
+                                    <div>
+                                        <input type="checkbox" name="permissions[]" value="{{ permission.id }}" id="{{ permission.id }}">
+                                        <label for="{{ permission.id }}">{{ permission.name }}</label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div class="mt-5">
+                                {{ form_row(form.save) }}
+                            </div>
+                            {{ form_end(form) }}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
