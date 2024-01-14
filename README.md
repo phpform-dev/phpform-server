@@ -25,6 +25,10 @@ Checkout the repository jump to the folder and run the following commands:
 ```bash
 docker-compose up
 ```
+Run DB migrations from container
+```bash
+php bin/console doctrine:migrations:migrate
+```
 
 ### How to run locally without docker
 Make sure you have PHP 8.2 and composer installed.
@@ -36,6 +40,10 @@ cp .env.dev .env
 Install dependencies:
 ```bash
 composer install
+```
+Run database migrations:
+```bash
+php bin/console doctrine:migrations:migrate
 ```
 Run the server:
 ```bash

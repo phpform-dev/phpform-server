@@ -9,6 +9,4 @@ services:
       - 443:443
     volumes:
       - ./:/app
-      - caddy_data:/data
-      - caddy_config:/config
     tty: true
