@@ -66,4 +66,4 @@ We provide a set of frontend components that you can use to build your forms.
 
 Soon will be available components for React, Vue, Angular, Svelte and more.
 
-Stay in touch with us on [Twitter](https://twitter.com/flexformdev) to get the latest updates.
+Stay in touch with us on [Twitter](https://twitter.com/avshelestov) to get the latest updates.
