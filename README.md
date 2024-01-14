@@ -68,6 +68,9 @@ Make sure you:
 
 You can see an example of environment variables in the [.env.prod](.env.prod) file.
 
+### Deploy instructions
+ - [Installing FlexForm on DigitalOcean Apps](https://medium.com/@ashelestov/installing-flexform-on-digitalocean-apps-b3e5b1ba868a)
+
 ## Frontend components
 FlexForm is a headless form server. This means that you can use any frontend framework to build your forms.
 We provide a set of frontend components that you can use to build your forms.
