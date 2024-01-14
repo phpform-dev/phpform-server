@@ -51,7 +51,7 @@ php -S localhost:8000 -t public
 ```
 
 ### How to install on shared hosting
-Build the project on your local machine or download prebuild release from [here](https://flexform.dev/downloads/flexform-server-latest.zip).
+Build the project on your local machine or download prebuild release from [here](https://flexform.nyc3.cdn.digitaloceanspaces.com/flexform-server-latest.zip).
 Upload the files to your shared hosting.
 
 Make sure you:
