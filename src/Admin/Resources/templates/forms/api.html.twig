@@ -26,7 +26,7 @@
         <div class="card-content" x-data="checkApi">
             <div class="content" x-init="check">
                 <div>
-                    <apan class="tag is-info">GET</apan> {{ app.request.getSchemeAndHttpHost() }}{{ path('public_api_form', { 'hash': formEntity.hash }) }}
+                    <apan class="tag is-info">GET</apan> {{ app.request.getHttpHost() }}{{ path('public_api_form', { 'hash': formEntity.hash }) }}
                 </div>
                 <div x-show="loading">
                     <div class="mt-5 is-flex is-justify-content-center is-align-items-center">
@@ -40,7 +40,7 @@
                         <pre x-text="getResponseExample"></pre>
                     </div>
                     <div class="mt-6">
-                        <apan class="tag is-success">POST</apan> {{ app.request.getSchemeAndHttpHost() }}{{ path('public_api_form', { 'hash': formEntity.hash }) }}
+                        <span class="tag is-success">POST</span> {{ app.request.getHttpHost() }}{{ path('public_api_form', { 'hash': formEntity.hash }) }}
                     </div>
                     <h6 class="mt-5">Body</h6>
                     <div style="overflow-y: auto; max-height: 500px;">
@@ -60,7 +60,7 @@
                 postRequestExample: '',
 
                 async check() {
-                    const response = await fetch('{{ app.request.getSchemeAndHttpHost() }}{{ path('public_api_form', { 'hash': formEntity.hash }) }}');
+                    const response = await fetch('//{{ app.request.getHttpHost() }}{{ path('public_api_form', { 'hash': formEntity.hash }) }}');
                     this.response = await response.json();
                     this.getResponseExample = JSON.stringify(this.response, null, 2);
                     const postRequest = {};
