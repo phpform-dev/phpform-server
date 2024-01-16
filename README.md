@@ -38,6 +38,7 @@ FlexForm is released under MIT, ensuring it remains free and open for use and mo
  - [Deploying on shared hosting](#deploying-on-shared-hosting)
  - [Running locally with docker](#running-locally-with-docker)
  - [Running locally without docker](#running-locally-with-php-server)
+
  - [Deploy instructions](#deploy-instructions)
 
 
@@ -46,10 +47,14 @@ Use the latest [image from docker hub](https://hub.docker.com/r/flexform/flexfor
 ```bash
 docker run --name flexform -d -p 9000:9000 flexform/flexform-server:0.1
 ```
+Copy environment file and adjust it to your needs:
+```bash
+cp .env.prod .env
+```
 Run DB migrations from container
 ```bash
 docker exec -it flexform bash
-php bin/console doctrine:migrations:generate
+php bin/console doctrine:migrations:diff
 php bin/console doctrine:migrations:migrate
 ```
 
@@ -57,13 +62,16 @@ php bin/console doctrine:migrations:migrate
 Make sure you have PHP 8.2 and composer installed.
 Checkout the repository jump to the folder.
 Copy environment file and adjust it to your needs:
+```bash
+cp .env.prod .env
+```
 Install dependencies:
 ```bash
 composer install
 ```
 Run database migrations:
 ```bash
-php bin/console doctrine:migrations:generate
+php bin/console doctrine:migrations:diff
 php bin/console doctrine:migrations:migrate
 ```
 Run the server:
@@ -77,7 +85,7 @@ Upload the files to your shared hosting.
 Make sure you make "public" folder as your main folder.
 Run database migrations:
 ```bash
-php bin/console doctrine:migrations:generate
+php bin/console doctrine:migrations:diff
 php bin/console doctrine:migrations:migrate
 ```
 
@@ -90,13 +98,16 @@ Make sure you:
 - Set the environment variable `APP_SECRET` to a random string
 - Set the environment variable `DATABASE_URL` to your database connection string
 
-You can see an example of environment variables in the [.env.prod](.env.prod) file.
+Copy environment file with default values:
+```bash
+cp .env.prod .env
+```
 
 **Please make sure you made /app/var as persistent storage if you use SQLite. If you want to use other database please change DATABASE_URL env variable.**
 
 Run database migrations:
 ```bash
-php bin/console doctrine:migrations:generate
+php bin/console doctrine:migrations:diff
 php bin/console doctrine:migrations:migrate
 ```
 
