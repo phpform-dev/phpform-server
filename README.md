@@ -49,6 +49,7 @@ docker run --name flexform -d -p 9000:9000 flexform/flexform-server:0.1
 Run DB migrations from container
 ```bash
 docker exec -it flexform bash
+php bin/console doctrine:migrations:generate
 php bin/console doctrine:migrations:migrate
 ```
 
@@ -62,6 +63,7 @@ composer install
 ```
 Run database migrations:
 ```bash
+php bin/console doctrine:migrations:generate
 php bin/console doctrine:migrations:migrate
 ```
 Run the server:
@@ -73,6 +75,11 @@ php -S localhost:8000 -t public
 Build the project on your local machine or [download prebuild release](https://flexform.nyc3.cdn.digitaloceanspaces.com/flexform-server-latest.zip).
 Upload the files to your shared hosting.
 Make sure you make "public" folder as your main folder.
+Run database migrations:
+```bash
+php bin/console doctrine:migrations:generate
+php bin/console doctrine:migrations:migrate
+```
 
 ## Deploying on cloud hosting
 You can deploy FlexForm on any cloud hosting provider that supports PHP 8.2 or higher.
@@ -86,6 +93,12 @@ Make sure you:
 You can see an example of environment variables in the [.env.prod](.env.prod) file.
 
 **Please make sure you made /app/var as persistent storage if you use SQLite. If you want to use other database please change DATABASE_URL env variable.**
+
+Run database migrations:
+```bash
+php bin/console doctrine:migrations:generate
+php bin/console doctrine:migrations:migrate
+```
 
 ## Deploy instructions
  - [Installing FlexForm on DigitalOcean Apps](https://medium.com/@ashelestov/installing-flexform-on-digitalocean-apps-b3e5b1ba868a)
