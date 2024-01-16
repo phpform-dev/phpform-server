@@ -33,9 +33,9 @@ final class Version20240109170611 extends AbstractMigration
         $this->addSql('CREATE INDEX forms_deleted_at_idx ON forms (deleted_at)');
         $this->addSql('CREATE TABLE submissions (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, form_id INTEGER NOT NULL, answers CLOB NOT NULL --(DC2Type:json)
         , created_at DATETIME NOT NULL --(DC2Type:datetime_immutable)
-        , read_at DATETIME NOT NULL --(DC2Type:datetime_immutable)
-        , flagged_at DATETIME NOT NULL --(DC2Type:datetime_immutable)
-        , deleted_at DATETIME NOT NULL --(DC2Type:datetime_immutable)
+        , read_at DATETIME --(DC2Type:datetime_immutable)
+        , flagged_at DATETIME --(DC2Type:datetime_immutable)
+        , deleted_at DATETIME --(DC2Type:datetime_immutable)
         , CONSTRAINT FK_3F6169F75FF69B7D FOREIGN KEY (form_id) REFERENCES forms (id) NOT DEFERRABLE INITIALLY IMMEDIATE)');
         $this->addSql('CREATE INDEX IDX_3F6169F75FF69B7D ON submissions (form_id)');
         $this->addSql('CREATE INDEX submissions_form_id_idx ON submissions (form_id, created_at)');

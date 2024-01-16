@@ -12,7 +12,7 @@ readonly class RegExpValidator implements ValidatorInterface {
         if ($this->pattern === null) {
             return true;
         }
-        return preg_match($this->pattern, $value) === 1;
+        return preg_match('!' . $this->pattern . '!u', $value) === 1;
     }
 
     public function getErrorMessage(): string {

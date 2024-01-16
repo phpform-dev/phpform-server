@@ -22,7 +22,7 @@ class FormController extends AbstractController
     {
     }
 
-    #[Route('/api/forms/{hash}', name: 'public_api_form', methods: ['GET', 'POST'], format: 'json')]
+    #[Route('/api/forms/{hash}', name: 'public_api_form', methods: ['GET', 'POST', 'OPTIONS'], format: 'json')]
     public function form(Request $request, string $hash): JsonResponse
     {
         $form = $this->formService->getByHash($hash);
@@ -49,21 +49,26 @@ class FormController extends AbstractController
             }
 
             $submitted = $this->formSubmissionService->submit($form->getId(), $data);
+            $response = $this->json($submitted);
+        } else {
+            $formFields = $this->formFieldService->getAllByFormId($form->getId());
 
-            return $this->json($submitted);
+            $response = $this->json([
+                'fields' => array_map(fn($formField) => [
+                    'type' => $formField->getType(),
+                    'name' => $formField->getName(),
+                    'label' => $formField->getLabel(),
+                    'hint' => $formField->getHint(),
+                    'isRequired' => $formField->getIsRequired(),
+                    'validations' => $formField->getValidations(),
+                ], $formFields),
+            ]);
         }
 
-        $formFields = $this->formFieldService->getAllByFormId($form->getId());
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->headers->set('Access-Control-Allow-Headers', 'Content-Type');
+        $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
 
-        return $this->json([
-            'fields' => array_map(fn($formField) => [
-                'type' => $formField->getType(),
-                'name' => $formField->getName(),
-                'label' => $formField->getLabel(),
-                'hint' => $formField->getHint(),
-                'isRequired' => $formField->getIsRequired(),
-                'validations' => $formField->getValidations(),
-            ], $formFields),
-        ]);
+        return $response;
     }
 }
