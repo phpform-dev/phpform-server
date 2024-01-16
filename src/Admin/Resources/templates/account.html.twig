@@ -8,21 +8,21 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
-    <body class="p-5 container is-max-desktop">
+    <body class="p-5 container is-max-desktop" x-data="{ isMenuOpen: false }">
         <nav class="navbar" role="navigation" aria-label="main navigation">
             <div class="navbar-brand">
                 <a class="navbar-item" href="{{ path('admin_forms') }}">
                     <img src="/images/logo_small.svg">
                 </a>
 
-                <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar">
+                <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar" @click="isMenuOpen = !isMenuOpen">
                     <span aria-hidden="true"></span>
                     <span aria-hidden="true"></span>
                     <span aria-hidden="true"></span>
                 </a>
             </div>
 
-            <div id="navbar" class="navbar-menu">
+            <div id="navbar" class="navbar-menu" :class="{'is-active': isMenuOpen}">
                 <div class="navbar-start">
                     <a
                         class="navbar-item {{ current_path starts with 'admin_forms' ? 'is-tab is-active' : '' }}"
