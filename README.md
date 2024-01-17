@@ -83,11 +83,6 @@ php -S localhost:8000 -t public
 Build the project on your local machine or [download prebuild release](https://flexform.nyc3.cdn.digitaloceanspaces.com/flexform-server-latest.zip).
 Upload the files to your shared hosting.
 Make sure you make "public" folder as your main folder.
-Run database migrations:
-```bash
-php bin/console doctrine:migrations:diff
-php bin/console doctrine:migrations:migrate
-```
 
 ## Deploying on cloud hosting
 You can deploy FlexForm on any cloud hosting provider that supports PHP 8.2 or higher.
