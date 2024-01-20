@@ -1,6 +1,6 @@
 services:
   app:
-    container_name: flexform
+    container_name: phpform
     build:
       context: .
       dockerfile: Dockerfile
