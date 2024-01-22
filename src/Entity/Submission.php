@@ -5,11 +5,12 @@ namespace App\Entity;
 use App\Repository\SubmissionRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
 
 #[ORM\Entity(repositoryClass: SubmissionRepository::class)]
 #[ORM\Table(name: 'submissions')]
 #[ORM\Index(columns: ['form_id', 'created_at'], name: 'submissions_form_id_idx')]
-class Submission implements EntityInterface
+class Submission implements JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -76,7 +77,7 @@ class Submission implements EntityInterface
         return $this;
     }
 
-    public function toArray(): array
+    public function jsonSerialize(): array
     {
         $answers = [];
         if (count($this->getAnswers()) > 0) {

@@ -5,8 +5,11 @@ namespace App\Admin\Controller;
 use App\Admin\Form\UserFormType;
 use App\Entity\User;
 use App\Service\FormService;
+use App\Service\UserBrowserTokenService;
 use App\Service\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -19,6 +22,8 @@ class UserController extends AbstractController
         private readonly UserService $userService,
         private readonly FormService $formService,
         private readonly UserPasswordHasherInterface $passwordHasher,
+        private readonly Security $security,
+        private readonly UserBrowserTokenService $userBrowserTokenService,
     )
     {
     }
@@ -99,6 +104,30 @@ class UserController extends AbstractController
             'form' => $form->createView(),
             'user' => $user,
             'forms' => $this->formService->getAll(),
+        ]);
+    }
+
+    #[Route('/admin/api/users/browser-token', name: 'admin_api_users_save_browser_token', methods: ['POST'], format: 'json')]
+    public function saveBrowserToken(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        $endpoint = $data['endpoint'] ?? null;
+        $publicKey = $data['publicKey'] ?? null;
+        $authToken = $data['authToken'] ?? null;
+
+        if (empty($endpoint) || empty($publicKey) || empty($authToken)) {
+            return $this->json('Data is empty', Response::HTTP_BAD_REQUEST);
+        }
+
+        $entity = $this->userBrowserTokenService->saveBrowserTokenByUser(
+            $this->security->getUser(),
+            $endpoint,
+            $publicKey,
+            $authToken,
+        );
+
+        return $this->json([
+            'data' => $entity,
         ]);
     }
 

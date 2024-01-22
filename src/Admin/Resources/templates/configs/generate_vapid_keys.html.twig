@@ -1,0 +1,32 @@
+{% extends '@Admin/account.html.twig' %}
+
+{% block title %}Generate{% endblock %}
+
+{% block body %}
+    <div class="columns">
+        <div class="column is-half is-offset-one-quarter">
+            <div class="card mt-5">
+                <header class="card-header">
+                    <p class="card-header-title">
+                        Generate New VAPID Keys
+                    </p>
+                </header>
+                <div class="card-content">
+                    <div class="content">
+                        <p>
+                            When you regenerate your keys all existed subscriptions will be removed.
+                            Do you want to continue?
+                        </p>
+                        <form action="{{ path('admin_configs_generate_vapid_keys') }}" method="post">
+                            <div class="field is-grouped">
+                                <div class="control">
+                                    <button class="button is-danger" type="submit">Generate new keys</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,118 @@
+{% extends '@Admin/forms/page.html.twig' %}
+
+{% block title %}Notifications / {{ formEntity.name }} / Forms{% endblock %}
+
+{% block section %}
+    <div class="card">
+        <header class="card-header">
+            <p class="card-header-title">
+                Notifications
+            </p>
+        </header>
+        <div class="card-content">
+            <div class="content">
+                <div x-data="notifications()" class="is-flex is-justify-content-space-between">
+                    <div class="is-flex is-align-items-center">
+                        <svg
+                            style="width:16px; height: 16px;"
+                            :style="{
+                                'fill': isPushNotificationEnabled ? 'hsl(141, 71%, 48%)' : 'hsl(348, 100%, 61%)'
+                            }"
+                            class="mr-1"
+                            viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <g><g><path d="M256,48C141.1,48,48,141.1,48,256s93.1,208,208,208c114.9,0,208-93.1,208-208S370.9,48,256,48z M256,446.7    c-105.1,0-190.7-85.5-190.7-190.7c0-105.1,85.5-190.7,190.7-190.7c105.1,0,190.7,85.5,190.7,190.7    C446.7,361.1,361.1,446.7,256,446.7z"/></g></g><g><g><path d="M256,96c-88.4,0-160,71.6-160,160c0,88.4,71.6,160,160,160c88.4,0,160-71.6,160-160C416,167.6,344.4,96,256,96z"/></g></g>
+                        </svg>
+                        <div>
+                            Send browser push notification when a new form is submitted
+                            <p class="is-size-7 has-text-danger" x-show="!isBrowserPushNotificationConfigEnabled" style="display: none;">
+                                Please add tokens in <a href="{{ path('admin_configs') }}">settings</a> to enable this feature
+                            </p>
+                            <p class="is-size-7" x-show="!isPermissionGranted" style="display: none;">
+                                Please <a @click="askForPermission">grand permission</a> to send notifications
+                            </p>
+                        </div>
+                    </div>
+                    <div>
+                        <button
+                            class="button is-small is-light"
+                            :class="{
+                                'is-success': isBrowserPushNotificationConfigEnabled && isPermissionGranted && !isPushNotificationEnabled,
+                                'is-danger': isPushNotificationEnabled,
+                                'is-loading': loading
+                            }"
+                            :disabled="!isBrowserPushNotificationConfigEnabled || !isPermissionGranted"
+                            @click="subscribeToPushNotifications"
+                        >
+                            <span x-show="isPushNotificationEnabled">Turn OFF</span>
+                            <span x-show="!isPushNotificationEnabled">Turn ON</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function notifications() {
+            return {
+                isBrowserPushNotificationConfigEnabled: {{ isBrowserPushNotificationConfigEnabled ? 'true' : 'false' }},
+                isPermissionGranted: Notification.permission === 'granted',
+                isPushNotificationEnabled: {{ isBrowserPushNotificationEnabled ? 'true' : 'false' }},
+                loading: false,
+                subscribeToPushNotifications: function () {
+                    if (!this.isBrowserPushNotificationConfigEnabled || !this.isPermissionGranted) {
+                        return;
+                    }
+
+                    this.loading = true;
+
+                    fetch('{{ path('admin_api_forms_notifications_browser_push', { id: formEntity.id }) }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                    })
+                        .then((response) => {
+                            if (response.status === 200) {
+                                this.isPushNotificationEnabled = !this.isPushNotificationEnabled;
+                            } else {
+                                alert('Something went wrong. Please try again later.');
+                            }
+                        })
+                        .catch((error) => {
+                            alert(error);
+                        })
+                        .finally(() => {
+                            this.loading = false;
+                        });
+                },
+                askForPermission: function () {
+                    this.loading = true;
+                    navigator.serviceWorker.ready.then(function(registration) {
+                        return registration.pushManager.subscribe({
+                            userVisibleOnly: true,
+                            applicationServerKey: '{{ vapidPublicKey }}'
+                        }).then(function(subscription) {
+                            fetch('{{ path('admin_api_users_save_browser_token') }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    endpoint: subscription.endpoint,
+                                    publicKey: btoa(String.fromCharCode.apply(null, new Uint8Array(subscription.getKey('p256dh')))),
+                                    authToken: btoa(String.fromCharCode.apply(null, new Uint8Array(subscription.getKey('auth')))),
+                                })
+                            }).then().finally(function() {
+                                document.location.reload();
+                            });
+                        }).catch(function() {
+                            alert('You have blocked notifications. Please allow them in your browser.');
+                        });
+                    });
+                }
+            }
+        }
+    </script>
+{% endblock %}

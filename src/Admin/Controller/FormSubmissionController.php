@@ -139,7 +139,7 @@ class FormSubmissionController extends AbstractController
 
         return $this->render('@Admin/form-submission/index.html.twig', [
             'formEntity' => $this->formService->getById($formId),
-            'submissions' => $submissions,
+            'submissions' => array_map(fn($submission) => $submission->jsonSerialize(), $submissions),
             'total' => $total,
             'menuCounts' => $this->formMenuCounterService->getAllCountsByFormId($formId),
             'status' => $type,

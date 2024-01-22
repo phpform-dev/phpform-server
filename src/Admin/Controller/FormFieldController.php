@@ -32,9 +32,7 @@ class FormFieldController extends AbstractController
         $all = $this->formFieldService->getAllByFormId($formId);
 
         return $this->json([
-            'data' => array_map(function ($formField) {
-                return $formField->toArray();
-            }, $all)
+            'data' => $all,
         ]);
     }
 
@@ -108,7 +106,7 @@ class FormFieldController extends AbstractController
         }
 
         return $this->json([
-            'data' => $formFieldEntity->toArray(),
+            'data' => $formFieldEntity,
         ]);
     }
 
@@ -166,7 +164,7 @@ class FormFieldController extends AbstractController
             );
 
             return $this->json([
-                'data' => $formFieldEntity->toArray(),
+                'data' => $formFieldEntity,
             ]);
         }
 
