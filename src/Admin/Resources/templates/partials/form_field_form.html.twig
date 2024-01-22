@@ -74,7 +74,7 @@
 
         {% if formFieldEntity is defined %}
 
-        formFieldEntity = {{ formFieldEntity.toArray()|json_encode(constant('JSON_PRETTY_PRINT'))|raw }};
+        formFieldEntity = {{ formFieldEntity|json_encode(constant('JSON_PRETTY_PRINT'))|raw }};
 
         if (formFieldEntity.validations === undefined) {
             formFieldEntity.validations = [];
