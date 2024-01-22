@@ -4,10 +4,11 @@ namespace App\Entity;
 
 use App\Repository\UserPermissionRepository;
 use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
 
 #[ORM\Entity(repositoryClass: UserPermissionRepository::class)]
 #[ORM\Table(name: 'user_permissions')]
-class UserPermission implements EntityInterface
+class UserPermission implements JsonSerializable
 {
     #[ORM\Id]
     #[ORM\ManyToOne(inversedBy: 'permissions')]
@@ -42,11 +43,11 @@ class UserPermission implements EntityInterface
         return $this;
     }
 
-    public function toArray(): array
+    public function jsonSerialize(): array
     {
         return [
-            'user' => $this->getUser()->toArray(),
-            'form' => $this->getForm()->toArray(),
+            'user' => $this->getUser()->jsonSerialize(),
+            'form' => $this->getForm()->jsonSerialize(),
         ];
     }
 }

@@ -134,7 +134,7 @@ class FormController extends AbstractController
 
         $allowedFormIds = null;
         if (!$this->getUser()->getIsSuperuser()) {
-            $allowedFormIds = $this->getUser()->getPermissions()->map(fn($p) => $p->getForm()->getId())->toArray();
+            $allowedFormIds = $this->getUser()->getPermissions()->map(fn($p) => $p->getForm()->getId());
         }
 
         $forms = $this->formService->find(ids: $allowedFormIds, archived: $isArchived);
@@ -146,7 +146,7 @@ class FormController extends AbstractController
         $flaggedSubmissions = $this->formSubmissionService->getCountFlaggedByFormIds($formIds);
 
         $forms = array_map(function($form) use ($activeSubmissions, $newSubmissions, $flaggedSubmissions) {
-            $form = $form->toArray();
+            $form = $form->jsonSerialize();
             $form['activeSubmissions'] = $activeSubmissions[$form['id']] ?? 0;
             $form['newSubmissions'] = $newSubmissions[$form['id']] ?? 0;
             $form['flaggedSubmissions'] = $flaggedSubmissions[$form['id']] ?? 0;

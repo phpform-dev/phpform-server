@@ -59,6 +59,16 @@
                             API Credentials
                         </a>
                     </li>
+                    <li>
+                        <a
+                            {% if current_path == 'admin_forms_notifications' %}
+                                class="is-active"
+                            {% endif %}
+                            href="{{ path('admin_forms_notifications', {'id': formEntity.id}) }}"
+                        >
+                            Notifications
+                        </a>
+                    </li>
                     {% if app.user.isSuperUser %}
                         <li>
                             <a

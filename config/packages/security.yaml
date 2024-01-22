@@ -42,6 +42,7 @@ security:
         - { path: ^/admin/login$, roles: PUBLIC_ACCESS }
         - { path: ^/admin/setup$, roles: PUBLIC_ACCESS }
         - { path: ^/admin/forms/create$, roles: ROLE_ADMIN }
+        - { path: ^/admin/configs$, roles: ROLE_ADMIN }
         - { path: ^/admin/forms/[0-9]+/delete$, roles: ROLE_ADMIN }
         - { path: ^/admin/forms/[0-9]+/edit, roles: ROLE_ADMIN }
         - { path: ^/admin/forms/[0-9]+/archive, roles: ROLE_ADMIN }

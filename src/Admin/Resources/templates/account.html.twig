@@ -40,6 +40,15 @@
                         </a>
                     {% endif %}
 
+                    {% if app.user.isSuperUser %}
+                        <a
+                            class="navbar-item {{ current_path starts with 'admin_configs' ? 'is-tab is-active' : '' }}"
+                            href="{{ path('admin_configs') }}"
+                        >
+                            Settings
+                        </a>
+                    {% endif %}
+
                     <div class="navbar-item has-dropdown is-hoverable">
                         <a class="navbar-link">
                             About
@@ -49,7 +58,7 @@
                             <span class="navbar-item">
                                 Version: 0.1.0
                             </span>
-                            <a class="navbar-item" href="https://flexform.dev" target="_blank">
+                            <a class="navbar-item" href="https://phpform.dev" target="_blank">
                                 Website
                             </a>
                         </div>
@@ -80,5 +89,38 @@
         </div>
 
         <script src="//unpkg.com/alpinejs" defer></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                if ('serviceWorker' in navigator && 'PushManager' in window) {
+                    navigator.serviceWorker.register('/sw.js')
+                        .then(function(swReg) {
+                            console.log('Service Worker Registered', swReg);
+                        })
+                        .catch(function(error) {
+                            console.error('Service Worker Error', error);
+                        });
+                }
+            });
+
+            navigator.serviceWorker.ready.then(function(registration) {
+                registration.pushManager.getSubscription().then(function(subscription) {
+                    if (subscription) {
+                        const subscriptionJson = JSON.stringify({
+                            endpoint: subscription.endpoint,
+                            publicKey: btoa(String.fromCharCode.apply(null, new Uint8Array(subscription.getKey('p256dh')))),
+                            authToken: btoa(String.fromCharCode.apply(null, new Uint8Array(subscription.getKey('auth')))),
+                        });
+
+                        fetch('{{ path('admin_api_users_save_browser_token') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: subscriptionJson,
+                        });
+                    }
+                });
+            });
+        </script>
     </body>
 </html>

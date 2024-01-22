@@ -6,6 +6,7 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -14,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Table(name: 'users')]
 #[ORM\Index(columns: ['email'], name: 'users_email_idx')]
 #[ORM\Index(columns: ['name'], name: 'users_name_idx')]
-class User implements PasswordAuthenticatedUserInterface, UserInterface, EntityInterface
+class User implements PasswordAuthenticatedUserInterface, UserInterface, JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -40,9 +41,17 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface, EntityI
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: UserBrowserToken::class, orphanRemoval: true)]
+    private Collection $browserTokens;
+
+    #[ORM\OneToMany(mappedBy: 'User', targetEntity: FormNotificationConfig::class, orphanRemoval: true)]
+    private Collection $formNotificationConfigs;
+
     public function __construct()
     {
         $this->permissions = new ArrayCollection();
+        $this->browserTokens = new ArrayCollection();
+        $this->formNotificationConfigs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -151,7 +160,7 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface, EntityI
         return $this->email;
     }
 
-    public function toArray(): array
+    public function jsonSerialize(): array
     {
         return [
             'id' => $this->getId(),
@@ -159,5 +168,65 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface, EntityI
             'email' => $this->getEmail(),
             'isSuperuser' => $this->getIsSuperuser(),
         ];
+    }
+
+    /**
+     * @return Collection<int, UserBrowserToken>
+     */
+    public function getBrowserTokens(): Collection
+    {
+        return $this->browserTokens;
+    }
+
+    public function addBrowserToken(UserBrowserToken $browserToken): static
+    {
+        if (!$this->browserTokens->contains($browserToken)) {
+            $this->browserTokens->add($browserToken);
+            $browserToken->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBrowserToken(UserBrowserToken $browserToken): static
+    {
+        if ($this->browserTokens->removeElement($browserToken)) {
+            // set the owning side to null (unless already changed)
+            if ($browserToken->getUser() === $this) {
+                $browserToken->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, FormNotificationConfig>
+     */
+    public function getFormNotificationConfigs(): Collection
+    {
+        return $this->formNotificationConfigs;
+    }
+
+    public function addFormNotificationConfig(FormNotificationConfig $formNotificationConfig): static
+    {
+        if (!$this->formNotificationConfigs->contains($formNotificationConfig)) {
+            $this->formNotificationConfigs->add($formNotificationConfig);
+            $formNotificationConfig->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFormNotificationConfig(FormNotificationConfig $formNotificationConfig): static
+    {
+        if ($this->formNotificationConfigs->removeElement($formNotificationConfig)) {
+            // set the owning side to null (unless already changed)
+            if ($formNotificationConfig->getUser() === $this) {
+                $formNotificationConfig->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }

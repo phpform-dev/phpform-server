@@ -1,12 +1,12 @@
 <?php
 namespace App\Service;
 
+use App\Event\NewSubmissionEvent;
 use App\Repository\SubmissionRepository;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\IWriter;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 readonly class FormSubmissionService
 {
@@ -14,6 +14,7 @@ readonly class FormSubmissionService
         private FormFieldService $formFieldService,
         private FormFieldTypeService $formFieldTypeService,
         private SubmissionRepository $submissionRepository,
+        private EventDispatcherInterface $eventDispatcher,
     )
     {
     }
@@ -50,41 +51,34 @@ readonly class FormSubmissionService
 
         if (count($errors) === 0) {
             $submission = $this->submissionRepository->create($formId, $data);
+            $this->eventDispatcher->dispatch(new NewSubmissionEvent($submission), 'submission.new');
         }
 
         return [
             'success' => count($errors) === 0,
             'errors' => $errors,
-            'data' => !empty($submission) ? $submission->toArray() : null,
+            'data' => !empty($submission) ? $submission : null,
         ];
     }
 
     public function getAllByFormId(int $formId, int $page = 1, int $perPage = 10): array
     {
-        $submissions = $this->submissionRepository->findByFormIdWithPagination($formId, $page, $perPage);
-
-        return array_map(fn($submission) => $submission->toArray(), $submissions);
+        return $this->submissionRepository->findByFormIdWithPagination($formId, $page, $perPage);
     }
 
     public function getNewByFormId(int $formId, int $page = 1, int $perPage = 10): array
     {
-        $submissions = $this->submissionRepository->findNewByFormIdWithPagination($formId, $page, $perPage);
-
-        return array_map(fn($submission) => $submission->toArray(), $submissions);
+        return $this->submissionRepository->findNewByFormIdWithPagination($formId, $page, $perPage);
     }
 
     public function getFlaggedByFormId(int $formId, int $page = 1, int $perPage = 10): array
     {
-        $submissions = $this->submissionRepository->findFlaggedByFormIdWithPagination($formId, $page, $perPage);
-
-        return array_map(fn($submission) => $submission->toArray(), $submissions);
+        return $this->submissionRepository->findFlaggedByFormIdWithPagination($formId, $page, $perPage);
     }
 
     public function getDeletedByFormId(int $formId, int $page = 1, int $perPage = 10): array
     {
-        $submissions = $this->submissionRepository->findDeletedByFormIdWithPagination($formId, $page, $perPage);
-
-        return array_map(fn($submission) => $submission->toArray(), $submissions);
+        return $this->submissionRepository->findDeletedByFormIdWithPagination($formId, $page, $perPage);
     }
 
     public function getCountAllByFormIds(array $formIds): array

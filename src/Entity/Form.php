@@ -7,6 +7,7 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: FormRepository::class)]
@@ -14,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Index(columns: ['hash'], name: 'forms_hash_idx')]
 #[ORM\Index(columns: ['created_at'], name: 'forms_created_at_idx')]
 #[ORM\Index(columns: ['deleted_at'], name: 'forms_deleted_at_idx')]
-class Form implements EntityInterface
+class Form implements JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -208,7 +209,7 @@ class Form implements EntityInterface
         return md5(uniqid((string) rand(), true));
     }
 
-    public function toArray(): array
+    public function jsonSerialize(): array
     {
         return [
             'id' => $this->getId(),

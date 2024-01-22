@@ -4,12 +4,13 @@ namespace App\Entity;
 
 use App\Repository\FormFieldRepository;
 use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: FormFieldRepository::class)]
 #[ORM\Table(name: 'form_fields')]
 #[ORM\Index(columns: ['form_id', 'position'], name: 'form_fields_form_position_idx')]
-class FormField implements EntityInterface
+class FormField implements JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -154,7 +155,7 @@ class FormField implements EntityInterface
         return $this;
     }
 
-    public function toArray(): array
+    public function jsonSerialize(): array
     {
         return [
             'id' => $this->getId(),

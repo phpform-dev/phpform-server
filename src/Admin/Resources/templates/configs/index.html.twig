@@ -1,0 +1,32 @@
+{% extends '@Admin/account.html.twig' %}
+
+{% block title %}Settings{% endblock %}
+
+{% block body %}
+    <div class="columns">
+        <div class="column is-half is-offset-one-quarter">
+            <div class="card mt-5">
+                <header class="card-header">
+                    <p class="card-header-title">
+                        Settings
+                    </p>
+                </header>
+                <div class="card-content">
+                    <div class="content">
+                        {{ form_start(form) }}
+                        <h6>Browser Push Notification</h6>
+                        <hr>
+                        {{ form_row(form.vapid_public_key) }}
+                        {{ form_row(form.vapid_private_key) }}
+                        <a href="{{ path('admin_configs_generate_vapid_keys') }}">
+                            Generate VAPID Keys
+                        </a>
+                        <hr>
+                        {{ form_row(form.save) }}
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
