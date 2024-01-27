@@ -8,6 +8,10 @@ class ConfigService
 {
     const VAPID_PUBLIC_KEY = 'vapid_public_key';
     const VAPID_PRIVATE_KEY = 'vapid_private_key';
+    const SMPT_HOST = 'smpt_host';
+    const SMPT_PORT = 'smpt_port';
+    const SMPT_USERNAME = 'smpt_username';
+    const SMPT_PASSWORD = 'smpt_password';
 
     public function __construct(
         private readonly ConfigRepository $configRepository,
@@ -43,7 +47,6 @@ class ConfigService
         foreach ($entities as $entity) {
             $entitiesById[$entity->getId()] = $entity->getValue();
         }
-
         return $entitiesById;
     }
 

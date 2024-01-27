@@ -22,6 +22,15 @@
                             Generate VAPID Keys
                         </a>
                         <hr>
+                    </div>
+                    <div class="content">
+                        <h6>SMPT Settings</h6>
+                        <hr>
+                        {{ form_row(form.smpt_host) }}
+                        {{ form_row(form.smpt_port) }}
+                        {{ form_row(form.smpt_username) }}
+                        {{ form_row(form.smpt_password) }}
+                        <hr>
                         {{ form_row(form.save) }}
                         {{ form_end(form) }}
                     </div>

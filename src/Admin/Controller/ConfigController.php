@@ -24,6 +24,10 @@ class ConfigController extends AbstractController
         $configKeys = [
             $this->configService::VAPID_PUBLIC_KEY,
             $this->configService::VAPID_PRIVATE_KEY,
+            $this->configService::SMPT_HOST,
+            $this->configService::SMPT_PORT,
+            $this->configService::SMPT_USERNAME,
+            $this->configService::SMPT_PASSWORD,
         ];
 
         $form = $this->createForm(ConfigsType::class, $this->configService->getMany($configKeys));
@@ -33,6 +37,7 @@ class ConfigController extends AbstractController
             foreach ($configKeys as $configKey) {
                 $this->configService->set($configKey, $form->get($configKey)->getData() ?? '');
             }
+    
             $this->addFlash('success', 'Configs updated!');
             return $this->redirectToRoute('admin_configs');
         }

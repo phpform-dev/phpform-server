@@ -6,6 +6,7 @@ use App\Service\ConfigService;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class ConfigsType extends AbstractType
@@ -21,6 +22,10 @@ class ConfigsType extends AbstractType
         $builder
             ->add($this->configService::VAPID_PUBLIC_KEY, TextType::class, ['required' => false])
             ->add($this->configService::VAPID_PRIVATE_KEY, TextType::class, ['required' => false])
+            ->add($this->configService::SMPT_HOST, TextType::class, ['required' => false])
+            ->add($this->configService::SMPT_PORT, TextType::class, ['required' => false])
+            ->add($this->configService::SMPT_USERNAME, TextType::class, ['required' => false])
+            ->add($this->configService::SMPT_PASSWORD, PasswordType::class, ['required' => false])
             ->add('save', SubmitType::class, ['label' => 'Save']);
     }
 }
