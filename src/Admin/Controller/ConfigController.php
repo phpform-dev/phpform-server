@@ -3,7 +3,9 @@
 namespace App\Admin\Controller;
 
 use App\Admin\Form\ConfigsType;
+use App\Email\SubmissionEmail;
 use App\Service\ConfigService;
+use App\Service\EmailService;
 use Minishlink\WebPush\VAPID;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,6 +16,7 @@ class ConfigController extends AbstractController
 {
     public function __construct(
         private readonly ConfigService $configService,
+        private readonly EmailService $emailService,
     )
     {
     }
@@ -24,9 +27,21 @@ class ConfigController extends AbstractController
         $configKeys = [
             $this->configService::VAPID_PUBLIC_KEY,
             $this->configService::VAPID_PRIVATE_KEY,
+            $this->configService::SMTP_HOST,
+            $this->configService::SMTP_PORT,
+            $this->configService::SMTP_USERNAME,
+            $this->configService::SMTP_PASSWORD,
+            $this->configService::SMTP_ENCRYPTION,
+            $this->configService::SMTP_FROM_EMAIL,
+            $this->configService::SMTP_FROM_NAME,
         ];
 
-        $form = $this->createForm(ConfigsType::class, $this->configService->getMany($configKeys));
+        $configs = $this->configService->getMany($configKeys);
+        if (empty($configs[$this->configService::SMTP_ENCRYPTION])) {
+            $configs[$this->configService::SMTP_ENCRYPTION] = 'ssl';
+        }
+
+        $form = $this->createForm(ConfigsType::class, $configs);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -54,5 +69,34 @@ class ConfigController extends AbstractController
         }
 
         return $this->render('@Admin/configs/generate_vapid_keys.html.twig');
+    }
+
+    #[Route('/admin/configs/test-smtp-connection', name: 'admin_configs_test_smtp_connection', methods: ['POST'], format: 'json')]
+    public function testSmtpConnection(Request $request): Response
+    {
+        $data = json_decode($request->getContent(), true);
+
+        $smtpHost = $data['host'] ?? null;
+        $smtpPort = (int) ($data['port'] ?? 0);
+        $smtpUsername = $data['username'] ?? null;
+        $smtpPassword = $data['password'] ?? null;
+        $smtpEncryption = $data['encryption'] ?? null;
+        $smtpFromEmail = $data['from_email'] ?? null;
+        $smtpFromName = $data['from_name'] ?? null;
+
+        if (empty($smtpHost) || empty($smtpPort) || empty($smtpUsername) || empty($smtpPassword) || empty($smtpEncryption) || empty($smtpFromEmail) || empty($smtpFromName)) {
+            throw new \InvalidArgumentException('Missing required data');
+        }
+
+        $dsn = $this->emailService->buildSmtpDsn($smtpHost, $smtpPort, $smtpUsername, $smtpPassword, $smtpEncryption);
+        $email = SubmissionEmail::invoke(
+            $smtpFromEmail, $smtpFromEmail, $smtpFromName, 'Test', 1);
+
+        $success = $this->emailService->sendEmail($dsn, $email);
+
+        return $this->json([
+            'success' => $success,
+            'error' => $success ? null : $this->emailService->getLastSendEmailError(),
+        ]);
     }
 }

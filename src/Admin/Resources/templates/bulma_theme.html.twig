@@ -14,10 +14,95 @@
     </div>
 {% endblock %}
 
+{% block textarea_widget %}
+    <div class="control">
+        <textarea {{ block('widget_attributes') }} class="textarea">{{ value }}</textarea>
+    </div>
+{% endblock %}
+
+{% block integer_widget %}
+    <div class="control">
+        <input {{ block('widget_attributes') }} class="input" type="number" value="{{ value }}">
+    </div>
+{% endblock %}
+
+{% block number_widget %}
+    <div class="control">
+        <input {{ block('widget_attributes') }} class="input" type="number" value="{{ value }}">
+    </div>
+{% endblock %}
+
+{% block percent_widget %}
+    <div class="control">
+        <input {{ block('widget_attributes') }} class="input" type="number" value="{{ value }}">
+    </div>
+{% endblock %}
+
+{% block money_widget %}
+    <div class="control">
+        <input {{ block('widget_attributes') }} class="input" type="number" value="{{ value }}">
+    </div>
+{% endblock %}
+
+{% block url_widget %}
+    <div class="control">
+        <input {{ block('widget_attributes') }} class="input" type="url" value="{{ value }}">
+    </div>
+{% endblock %}
+
+{% block range_widget %}
+    <div class="control">
+        <input {{ block('widget_attributes') }} class="input" type="range" value="{{ value }}">
+    </div>
+{% endblock %}
+
+{% block date_widget %}
+    <div class="control">
+        <input {{ block('widget_attributes') }} class="input" type="date" value="{{ value }}">
+    </div>
+{% endblock %}
+
+{% block datetime_widget %}
+    <div class="control">
+        <input {{ block('widget_attributes') }} class="input" type="datetime" value="{{ value }}">
+    </div>
+{% endblock %}
+
 {% block email_widget %}
     <div class="control">
         <input {{ block('widget_attributes') }} class="input" type="email" value="{{ value }}">
     </div>
+{% endblock %}
+
+{% block choice_widget %}
+    <div class="control">
+        <div class="select">
+            <select {{ block('widget_attributes') }}>
+                {% if preferred_choices|length > 0 %}
+                    {% set options = preferred_choices %}
+                    {{ block('choice_widget_options') }}
+                    {% if choices|length > 0 and separator is not none %}
+                        <option disabled="disabled">{{ separator }}</option>
+                    {% endif %}
+                {% endif %}
+                {% set options = choices %}
+                {{ block('choice_widget_options') }}
+            </select>
+        </div>
+    </div>
+{% endblock %}
+
+{% block choice_widget_options %}
+    {% for group_label, choice in options %}
+        {% if choice is iterable %}
+            <optgroup label="{{ choice_translation_domain is same as(false) ? group_label : group_label|trans({}, choice_translation_domain) }}">
+                {% set options = choice %}
+                {{ block('choice_widget_options') }}
+            </optgroup>
+        {% else %}
+            <option value="{{ choice.value }}" {% if choice is selectedchoice(value) %} selected="selected"{% endif %}>{{ choice_translation_domain is same as(false) ? choice.label : choice.label|trans({}, choice_translation_domain) }}</option>
+        {% endif %}
+    {% endfor %}
 {% endblock %}
 
 {% block password_widget %}

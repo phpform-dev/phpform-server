@@ -1,18 +1,21 @@
 <?php
 namespace App\Service;
 
+use App\Email\SubmissionEmail;
 use App\Entity\Form;
 use App\Entity\User;
 use ErrorException;
 use Minishlink\WebPush\Subscription;
 use Minishlink\WebPush\WebPush;
 
-class FormNotificationService
+readonly class FormNotificationService
 {
     public function __construct(
-        private readonly FormNotificationConfigService $formNotificationConfigService,
-        private readonly UserBrowserTokenService $userBrowserTokenService,
-        private readonly ConfigService $configService,
+        private FormNotificationConfigService $formNotificationConfigService,
+        private UserBrowserTokenService       $userBrowserTokenService,
+        private ConfigService                 $configService,
+        private EmailService                  $emailService,
+        private FormSubmissionService         $formSubmissionService,
     )
     {
     }
@@ -22,8 +25,8 @@ class FormNotificationService
         // TODO: Queue?
         $formNotificationConfigs = $this->formNotificationConfigService->getAllByFormId($formId);
         foreach ($formNotificationConfigs as $formNotificationConfig) {
+            $user = $formNotificationConfig->getUser();
             if ($formNotificationConfig->getIsBrowserPushEnabled()) {
-                $user = $formNotificationConfig->getUser();
                 $userBrowserTokens = $this->userBrowserTokenService->getAllByUserId($user->getId());
                 foreach ($userBrowserTokens as $userBrowserToken) {
                     try {
@@ -42,13 +45,18 @@ class FormNotificationService
                     }
                 }
             }
+
+            if ($formNotificationConfig->getIsEmailEnabled()) {
+                $this->sendEmailNotification($user, $formNotificationConfig->getForm());
+            }
         }
     }
 
     /**
      * @throws ErrorException
      */
-    public function sendBrowserPushNotification(User $user, Form $form, $subscription): void {
+    public function sendBrowserPushNotification(User $user, Form $form, Subscription $subscription): void
+    {
         $auth = [
             'VAPID' => [
                 'subject' => 'mailto:' . $user->getEmail(),
@@ -75,5 +83,19 @@ class FormNotificationService
                 $this->userBrowserTokenService->deleteByEndpoint($result->getEndpoint());
             }
         }
+    }
+
+    public function sendEmailNotification(User $user, Form $form): void
+    {
+        $dsn = $this->emailService->buildSmtpDsnFromConfig();
+        $email = SubmissionEmail::invoke(
+            $user->getEmail(),
+            $this->configService->get(ConfigService::SMTP_FROM_EMAIL),
+            $this->configService->get(ConfigService::SMTP_FROM_NAME),
+            $form->getName(),
+            $this->formSubmissionService->getCountNewByFormIds([$form->getId()])[$form->getId()],
+        );
+
+        $this->emailService->sendEmail($dsn, $email);
     }
 }

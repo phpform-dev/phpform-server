@@ -6,6 +6,7 @@ use App\Service\FormFieldService;
 use App\Service\FormService;
 use App\Service\FormSubmissionService;
 use App\Service\ReCaptchaService;
+use App\Service\TokenProtectionService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,6 +29,14 @@ class FormController extends AbstractController
         $form = $this->formService->getByHash($hash);
         if (!$form) {
             return $this->json(['error' => 'Form not found'], 404);
+        }
+
+        if ($form->isTokenEnabled()) {
+            $tokenProtectionService = new TokenProtectionService($form);
+            $token = $request->headers->get('Authorization');
+            if (!$token || !$tokenProtectionService->isTokenValid($token)) {
+                return $this->json(['error' => 'Invalid token'], 401);
+            }
         }
 
         if ($request->getMethod() === 'POST') {

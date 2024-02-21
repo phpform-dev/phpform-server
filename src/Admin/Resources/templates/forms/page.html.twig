@@ -82,6 +82,26 @@
                         </li>
                         <li>
                             <a
+                                {% if current_path == 'admin_forms_recaptcha' %}
+                                    class="is-active"
+                                {% endif %}
+                                href="{{ path('admin_forms_recaptcha', {'id': formEntity.id}) }}"
+                            >
+                                reCAPTCHA Protection
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                {% if current_path == 'admin_forms_token' %}
+                                    class="is-active"
+                                {% endif %}
+                                href="{{ path('admin_forms_token', {'id': formEntity.id}) }}"
+                            >
+                                Token Protection
+                            </a>
+                        </li>
+                        <li>
+                            <a
                                 {% if current_path starts with 'admin_forms_fields' %}
                                     class="is-active"
                                 {% endif %}

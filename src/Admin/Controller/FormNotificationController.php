@@ -2,6 +2,7 @@
 namespace App\Admin\Controller;
 
 use App\Entity\Form;
+use App\Entity\FormNotificationConfig;
 use App\Service\ConfigService;
 use App\Service\FormMenuCounterService;
 use App\Service\FormNotificationConfigService;
@@ -32,21 +33,42 @@ class FormNotificationController extends AbstractController
             'isBrowserPushNotificationConfigEnabled' => $this->configService->isBrowserPushNotificationsEnabled(),
             'vapidPublicKey' => $this->configService->get(ConfigService::VAPID_PUBLIC_KEY),
             'isBrowserPushNotificationEnabled' => $notificationConfig ? $notificationConfig->getIsBrowserPushEnabled() : false,
+            'isEmailNotificationConfigEnabled' => $this->configService->isSmtpEnabled(),
+            'isEmailNotificationEnabled' => $notificationConfig ? $notificationConfig->getIsEmailEnabled() : false,
         ]);
     }
 
     #[Route('/admin/api/forms/{id}/notifications/browser-push', name: 'admin_api_forms_notifications_browser_push', methods: ['POST'], format: 'json')]
     public function toggleBrowserPushNotifications(Form $formEntity): Response
     {
-        $notificationConfig = $this->formNotificationConfigService->getByFormAndUser($formEntity, $this->security->getUser());
-        if (!$notificationConfig) {
-            $notificationConfig = $this->formNotificationConfigService->create($formEntity, $this->security->getUser());
-        }
+        $notificationConfig = $this->getOrCreateNotificationsConfig($formEntity);
         $notificationConfig->setIsBrowserPushEnabled(!$notificationConfig->getIsBrowserPushEnabled());
         $this->formNotificationConfigService->save($notificationConfig);
 
         return $this->json([
-            'isBrowserPushEnabled' => $notificationConfig->getIsBrowserPushEnabled(),
+            'isEnabled' => $notificationConfig->getIsBrowserPushEnabled(),
         ]);
+    }
+
+    #[Route('/admin/api/forms/{id}/notifications/email', name: 'admin_api_forms_notifications_email', methods: ['POST'], format: 'json')]
+    public function toggleEmailNotifications(Form $formEntity): Response
+    {
+        $notificationConfig = $this->getOrCreateNotificationsConfig($formEntity);
+        $notificationConfig->setIsEmailEnabled(!$notificationConfig->getIsEmailEnabled());
+        $this->formNotificationConfigService->save($notificationConfig);
+
+        return $this->json([
+            'isEnabled' => $notificationConfig->getIsBrowserPushEnabled(),
+        ]);
+    }
+
+    private function getOrCreateNotificationsConfig(Form $formEntity): FormNotificationConfig
+    {
+        $notificationConfig = $this->formNotificationConfigService->getByFormAndUser($formEntity, $this->security->getUser());
+        if (!$notificationConfig) {
+            $notificationConfig = $this->formNotificationConfigService->create($formEntity, $this->security->getUser());
+        }
+
+        return $notificationConfig;
     }
 }

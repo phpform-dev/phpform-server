@@ -1,0 +1,41 @@
+{% extends '@Admin/forms/page.html.twig' %}
+
+{% block title %}API / {{ formEntity.name }} / Forms{% endblock %}
+
+{% block section %}
+    <div class="card">
+        <header class="card-header">
+            <p class="card-header-title">
+                Token Protection
+            </p>
+        </header>
+        <div class="card-content">
+            <div class="content">
+                <form method="post">
+                    {{ form_start(form) }}
+                    {{ form_row(form.secret) }}
+                    <p>
+                        Keep the field empty to disable Token Protection.
+                    </p>
+                    <h5>
+                        How to generate a token?
+                    </h5>
+                    <p>
+                        You can generate a token using the following algorithm:
+                    </p>
+                    <pre>sha256(secret + random_string)</pre>
+                    <p>
+                        After you need to put the hash and random_string in the Authorization header:
+                    </p>
+                    <pre>Authorization: Bearer [hash].[random_string]</pre>
+                    <p>
+                        "random_string" must unique for each request.<br>
+                        API will check if the hash is valid and if the random_string is right.
+                    </p>
+                    {{ form_row(form.save) }}
+                    {{ form_end(form) }}
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

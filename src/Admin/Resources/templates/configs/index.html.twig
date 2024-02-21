@@ -4,7 +4,7 @@
 
 {% block body %}
     <div class="columns">
-        <div class="column is-half is-offset-one-quarter">
+        <div class="column">
             <div class="card mt-5">
                 <header class="card-header">
                     <p class="card-header-title">
@@ -15,12 +15,66 @@
                     <div class="content">
                         {{ form_start(form) }}
                         <h6>Browser Push Notification</h6>
-                        <hr>
-                        {{ form_row(form.vapid_public_key) }}
-                        {{ form_row(form.vapid_private_key) }}
+                        <div class="columns">
+                            <div class="column is-half">
+                                {{ form_row(form.vapid_public_key) }}
+                            </div>
+                            <div class="column is-half">
+                                {{ form_row(form.vapid_private_key) }}
+                            </div>
+                        </div>
                         <a href="{{ path('admin_configs_generate_vapid_keys') }}">
                             Generate VAPID Keys
                         </a>
+                        <hr>
+                        <h6>SMTP Settings</h6>
+                        <div class="columns">
+                            <div class="column is-half">
+                                {{ form_row(form.smtp_host) }}
+                            </div>
+                            <div class="column is-half">
+                                {{ form_row(form.smtp_port) }}
+                            </div>
+                        </div>
+                        <div class="columns">
+                            <div class="column is-half">
+                                {{ form_row(form.smtp_username) }}
+                            </div>
+                            <div class="column is-half">
+                                {{ form_row(form.smtp_password) }}
+                            </div>
+                        </div>
+                        <div class="columns">
+                            <div class="column">
+                                {{ form_row(form.smtp_encryption) }}
+                            </div>
+                        </div>
+                        <div class="columns">
+                            <div class="column is-half">
+                                {{ form_row(form.smtp_from_email) }}
+                            </div>
+                            <div class="column is-half">
+                                {{ form_row(form.smtp_from_name) }}
+                            </div>
+                        </div>
+                        <div x-data="smtp">
+                            <a @click="test">
+                                Test SMTP Connection
+                            </a>
+                            <p x-show="loading || success !== null" style="display: none;" class="mt-4">
+                                <span x-show="loading">
+                                    Checking...
+                                </span>
+                                <span x-show="success === true" class="has-text-success">
+                                    All good!
+                                </span>
+                                <span x-show="success === false" class="has-text-danger">
+                                    Please check your SMTP settings
+                                    <br>
+                                    <span x-text="errorMessage"></span>
+                                </span>
+                            </p>
+                        </div>
                         <hr>
                         {{ form_row(form.save) }}
                         {{ form_end(form) }}
@@ -29,4 +83,54 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function smtp() {
+            return {
+                loading: false,
+                success: null,
+                errorMessage: null,
+                test: function () {
+                    const data = {
+                        host: document.querySelector('#configs_smtp_host').value,
+                        port: document.querySelector('#configs_smtp_port').value,
+                        username: document.querySelector('#configs_smtp_username').value,
+                        password: document.querySelector('#configs_smtp_password').value,
+                        encryption: document.querySelector('#configs_smtp_encryption').value,
+                        from_email: document.querySelector('#configs_smtp_from_email').value,
+                        from_name: document.querySelector('#configs_smtp_from_name').value,
+                    }
+
+                    if (Object.values(data).some(value => value === '')) {
+                        alert('Please fill all the fields');
+                        return;
+                    }
+
+                    this.loading = true;
+                    this.success = null;
+
+                    fetch('{{ path('admin_configs_test_smtp_connection') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data),
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            this.success = data.success;
+                            if (data.success === false) {
+                                this.errorMessage = data.error;
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('Error:', error);
+                        })
+                        .finally(() => {
+                            this.loading = false;
+                        });
+                }
+            }
+        }
+    </script>
 {% endblock %}
