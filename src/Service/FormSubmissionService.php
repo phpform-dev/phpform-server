@@ -51,7 +51,9 @@ readonly class FormSubmissionService
 
         if (count($errors) === 0) {
             $submission = $this->submissionRepository->create($formId, $data);
-            $this->eventDispatcher->dispatch(new NewSubmissionEvent($submission), 'submission.new');
+            if ($submission) {
+                $this->eventDispatcher->dispatch(new NewSubmissionEvent($submission), 'submission.new');
+            }
         }
 
         return [
