@@ -1,11 +1,14 @@
 <?php
 namespace App\Admin\Controller;
 
+use App\Admin\Form\FormRecaptchaType;
+use App\Admin\Form\FormSecretType;
 use App\Entity\Form;
 use App\Admin\Form\FormType;
 use App\Service\FormMenuCounterService;
 use App\Service\FormService;
 use App\Service\FormSubmissionService;
+use App\Service\TokenProtectionService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -72,6 +75,48 @@ class FormController extends AbstractController
         ]);
     }
 
+    #[Route('/admin/forms/{id}/recaptcha', name: 'admin_forms_recaptcha')]
+    public function recaptcha(Request $request, Form $formEntity): Response
+    {
+        $form = $this->createForm(FormRecaptchaType::class, $formEntity);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->formService->edit($formEntity);
+
+            $this->addFlash('primary', 'Recaptcha Secret Key updated successfully');
+
+            return $this->redirectToRoute('admin_forms_recaptcha', ['id' => $formEntity->getId()]);
+        }
+
+        return $this->render('@Admin/forms/recaptcha.html.twig', [
+            'form' => $form->createView(),
+            'formEntity' => $formEntity,
+            'menuCounts' => $this->formMenuCounterService->getAllCountsByFormId($formEntity->getId()),
+        ]);
+    }
+
+    #[Route('/admin/forms/{id}/token', name: 'admin_forms_token')]
+    public function token(Request $request, Form $formEntity): Response
+    {
+        $form = $this->createForm(FormSecretType::class, $formEntity);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->formService->edit($formEntity);
+
+            $this->addFlash('primary', 'Secret Key updated successfully');
+
+            return $this->redirectToRoute('admin_forms_token', ['id' => $formEntity->getId()]);
+        }
+
+        return $this->render('@Admin/forms/token.html.twig', [
+            'form' => $form->createView(),
+            'formEntity' => $formEntity,
+            'menuCounts' => $this->formMenuCounterService->getAllCountsByFormId($formEntity->getId()),
+        ]);
+    }
+
     #[Route('/admin/forms/{id}/fields', name: 'admin_forms_fields', methods: ['GET'])]
     public function fields(Request $request, Form $formEntity): Response
     {
@@ -120,11 +165,17 @@ class FormController extends AbstractController
     }
 
     #[Route('/admin/forms/{id}', name: 'admin_forms_info')]
-    public function api(Request $request, Form $formEntity): Response
+    public function api(Form $formEntity): Response
     {
+        $apiToken = null;
+        if($formEntity->isTokenEnabled()) {
+            $apiToken = (new TokenProtectionService($formEntity))->createToken('test');
+        }
+
         return $this->render('@Admin/forms/api.html.twig', [
             'formEntity' => $formEntity,
             'menuCounts' => $this->formMenuCounterService->getAllCountsByFormId($formEntity->getId()),
+            'apiToken' => $apiToken,
         ]);
     }
 

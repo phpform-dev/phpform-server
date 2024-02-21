@@ -58,9 +58,16 @@
                 response: null,
                 getResponseExample: '',
                 postRequestExample: '',
+                apiToken: '{{ apiToken }}',
 
                 async check() {
-                    const response = await fetch('//{{ app.request.getHttpHost() }}{{ path('public_api_form', { 'hash': formEntity.hash }) }}');
+                    const options = {};
+                    if (this.apiToken) {
+                        options.headers = {
+                            'Authorization': 'Bearer ' + this.apiToken,
+                        }
+                    }
+                    const response = await fetch('//{{ app.request.getHttpHost() }}{{ path('public_api_form', { 'hash': formEntity.hash }) }}', options);
                     this.response = await response.json();
                     this.getResponseExample = JSON.stringify(this.response, null, 2);
                     const postRequest = {};

@@ -47,6 +47,9 @@ class Form implements JsonSerializable
     #[ORM\Column(type: 'string', unique: true)]
     private ?string $hash = null;
 
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $secret = null;
+
     public function __construct()
     {
         $this->userPermissions = new ArrayCollection();
@@ -54,6 +57,7 @@ class Form implements JsonSerializable
         $this->fields = new ArrayCollection();
         $this->created_at = new DateTimeImmutable();
         $this->hash = $this->generateHash();
+        $this->secret = null;
     }
 
     public function getId(): ?int
@@ -199,9 +203,26 @@ class Form implements JsonSerializable
         return $this;
     }
 
+    public function getSecret(): ?string
+    {
+        return $this->secret;
+    }
+
+    public function setSecret(?string $secret): static
+    {
+        $this->secret = $secret;
+
+        return $this;
+    }
+
     public function isRecaptchaEnabled(): bool
     {
         return $this->getRecaptchaToken() !== null && strlen($this->getRecaptchaToken()) > 0;
+    }
+
+    public function isTokenEnabled(): bool
+    {
+        return $this->getSecret() !== null && strlen($this->getSecret()) > 0;
     }
 
     private function generateHash(): string
@@ -217,6 +238,7 @@ class Form implements JsonSerializable
             'createdAt' => $this->getCreatedAt(),
             'deletedAt' => $this->getDeletedAt(),
             'recaptchaToken' => $this->getRecaptchaToken(),
+            'secret' => $this->getSecret(),
             'hash' => $this->getHash(),
         ];
     }

@@ -8,6 +8,7 @@ use App\Service\FormFieldService;
 use App\Service\FormFieldTypeService;
 use App\Service\FormSubmissionService;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class FormSubmissionServiceTest extends TestCase 
 {
@@ -322,6 +323,7 @@ class FormSubmissionServiceTest extends TestCase
       $formFieldService,
       new FormFieldTypeService(new FieldTypesFabric()),
       $this->mockSubmissionRepository(),
+      $this->mockEventDispatcher(),
     );
     
     $tests = [
@@ -357,12 +359,21 @@ class FormSubmissionServiceTest extends TestCase
     return $submissionRepository;
   }
 
+  private function mockEventDispatcher()
+  {
+    $mock = $this->createMock(EventDispatcher::class);
+    $mock->method('dispatch')->willReturn((object)[]);
+
+    return $mock;
+  }
+
   private function createSubmissionService(array $formFields): FormSubmissionService
   {
     return new FormSubmissionService(
       $this->mockFormFieldService($formFields),
       new FormFieldTypeService(new FieldTypesFabric()),
       $this->mockSubmissionRepository(),
+      $this->mockEventDispatcher(),
     );
   }
 }
