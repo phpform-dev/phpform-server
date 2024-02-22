@@ -12,4 +12,4 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 COPY . /app
 
-RUN composer install
+RUN COMPOSER_ALLOW_SUPERUSER=1 composer install
