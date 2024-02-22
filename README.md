@@ -12,7 +12,9 @@ developers and businesses looking for a reliable and GDPR-compliant form managem
 - **Robust Admin Panel**: Manage your forms with ease using our user-friendly admin panel, designed for efficient and intuitive form management.
 - **Cost-Effective**: Designed to run smoothly on inexpensive hosting or free cloud services, reducing your operational costs.
 - **GDPR Compliant**: We prioritize your data privacy. PHPForm ensures that all your data remains yours, complying fully with GDPR regulations.
-- **Open Source**: Dive into the code, customize, and contribute! Our community-driven approach means PHPForm is continually evolving.
+- **Browser Push and Email notifications**: Get notified when a new form submission is received.
+- **reCaptcha Protection**: Protect your forms from spam and abuse with Google reCaptcha.
+- **Token-based Protection**: Ideal protection for mobile and desktop apps.
 
 # Requirements
 ### PHP Version
@@ -107,6 +109,20 @@ Run database migrations:
 php bin/console doctrine:migrations:diff
 php bin/console doctrine:migrations:migrate
 ```
+
+## Troubleshooting
+#### Vendor folder is missing
+If you see an error that the vendor folder is missing, you need to install the dependencies.
+```
+Warning: require_once(/app/vendor/autoload_runtime.php): Failed to open stream: No such file or directory in /app/public/index.php on line 5
+```
+The main problem usually when you run composer install from the root user.
+If you still want to run composer install from the root user, you can use the following command:
+```bash
+COMPOSER_ALLOW_SUPERUSER=1 composer install
+```
+
+
 
 ## Deploy instructions
  - [Installing PHPForm on DigitalOcean Apps](https://medium.com/@ashelestov/installing-flexform-on-digitalocean-apps-b3e5b1ba868a)
