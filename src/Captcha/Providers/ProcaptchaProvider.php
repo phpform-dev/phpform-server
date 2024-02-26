@@ -5,7 +5,7 @@ use App\Captcha\CaptchaProviderInterface;
 
 class ProcaptchaProvider implements CaptchaProviderInterface
 {
-    private string $verifyUrl = 'https://api.procaptcha.com/siteverify';
+    private string $verifyUrl = 'https://api.procaptcha.io/siteverify';
 
     public function validate(string $response, string $secretKey, ?string $userIp = null): bool
     {
