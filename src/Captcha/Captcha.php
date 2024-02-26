@@ -9,6 +9,7 @@ final class Captcha
 {
   public const CAPTCHA_PROVIDER_RECAPTCHA = 0;
   public const CAPTCHA_PROVIDER_HCAPTCHA = 1;
+  public const CAPTCHA_PROVIDER_PROCAPTCHA = 2;
 
   public function getProviders(): array
   {
