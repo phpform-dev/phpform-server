@@ -43,7 +43,7 @@ class ProcaptchaProvider implements CaptchaProviderInterface
 
     public function getHomePageUrl(): string
     {
-        return 'https://www.prosopo.io/';
+        return 'https://www.prosopo.io/?utm_source=phpform&utm_medium=plugin&utm_campaign=phpform';
     }
 
     public function getDocumentationUrl(): string
