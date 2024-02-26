@@ -5,7 +5,7 @@ use App\Captcha\CaptchaProviderInterface;
 
 class HCaptchaProvider implements CaptchaProviderInterface
 {
-    private string $verifyUrl = 'https://www.google.com/recaptcha/api/siteverify';
+    private string $verifyUrl = 'https://api.hcaptcha.com/siteverify';
 
     public function validate(string $response, string $secretKey, ?string $userIp = null): bool
     {

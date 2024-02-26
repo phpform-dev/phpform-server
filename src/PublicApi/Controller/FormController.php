@@ -2,10 +2,10 @@
 
 namespace App\PublicApi\Controller;
 
+use App\Captcha\Captcha;
 use App\Service\FormFieldService;
 use App\Service\FormService;
 use App\Service\FormSubmissionService;
-use App\Service\ReCaptchaService;
 use App\Service\TokenProtectionService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,7 +18,7 @@ class FormController extends AbstractController
         private readonly FormService $formService,
         private readonly FormFieldService $formFieldService,
         private readonly FormSubmissionService $formSubmissionService,
-        private readonly ReCaptchaService $reCaptchaService,
+        private readonly Captcha $captcha,
     )
     {
     }
@@ -44,13 +44,17 @@ class FormController extends AbstractController
             if (!$data) {
                 return $this->json(['error' => 'Invalid request body'], 400);
             }
-
-            if($form->isCaptchaEnabled() && $this->getParameter('env') === 'prod') {
+            //  && $this->getParameter('env') === 'prod'
+            if($form->isCaptchaEnabled()) {
                 $captchaResponse = $data['captchaResponse'] ?? $data['recaptchaResponse'] ?? null;
                 if (!$captchaResponse) {
                     return $this->json(['error' => 'Missing captcha response'], 400);
                 }
-                $captchaValidationResult = $this->reCaptchaService->validate($captchaResponse, $form->getCaptchaToken(), $request->getClientIp());
+                $captchaProvider = $this->captcha->getProvider($form->getCaptchaProvider());
+                if (!$captchaProvider) {
+                    return $this->json(['error' => 'Invalid captcha provider'], 400);
+                }
+                $captchaValidationResult = $captchaProvider->validate($captchaResponse, $form->getCaptchaToken(), $request->getClientIp());
                 if (!$captchaValidationResult) {
                     return $this->json(['error' => 'Invalid captcha'], 400);
                 }

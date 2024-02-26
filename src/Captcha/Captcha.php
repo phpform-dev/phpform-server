@@ -16,4 +16,9 @@ final class Captcha
       self::CAPTCHA_PROVIDER_HCAPTCHA => new HCaptchaProvider(),
     ];
   }
+
+    public function getProvider(int $provider): ?CaptchaProviderInterface
+    {
+        return $this->getProviders()[$provider] ?? null;
+    }
 }

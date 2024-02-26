@@ -49,7 +49,7 @@ PHPForm is released under MIT, ensuring it remains free and open for use and mod
 ## Running locally with docker
 Use the latest [image from docker hub](https://hub.docker.com/r/phpform/phpform-server) to run it locally:
 ```bash
-docker run --name phpform -d -p 9000:9000 phpform/phpform-server:0.2
+docker run --name phpform -d -p 9000:9000 phpform/phpform-server:latest
 ```
 Copy environment file and adjust it to your needs:
 ```bash

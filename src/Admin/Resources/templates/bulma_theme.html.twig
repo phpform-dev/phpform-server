@@ -1,7 +1,9 @@
 {% block form_row %}
     <div class="field">
-        {{ form_label(form) }}
-        <div class="control">
+        <label class="has-text-weight-bold">
+            {{ form_label(form) }}
+        </label>
+        <div class="control mt-1">
             {{ form_widget(form) }}
         </div>
         {{ form_errors(form) }}
