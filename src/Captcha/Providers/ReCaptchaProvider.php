@@ -1,19 +1,21 @@
 <?php
-namespace App\Service;
+namespace App\Captcha\Providers;
 
-class ReCaptchaService
+use App\Captcha\CaptchaProviderInterface;
+
+class ReCaptchaProvider implements CaptchaProviderInterface
 {
     private string $verifyUrl = 'https://www.google.com/recaptcha/api/siteverify';
 
-    public function validate(string $recaptchaResponse, string $secretKey, ?string $userIp = null): bool
+    public function validate(string $response, string $secretKey, ?string $userIp = null): bool
     {
-        if (empty($recaptchaResponse)) {
+        if (empty($response)) {
             return false;
         }
 
         $data = [
             'secret' => $secretKey,
-            'response' => $recaptchaResponse,
+            'response' => $response,
             'remoteip' => $userIp
         ];
 
@@ -33,5 +35,20 @@ class ReCaptchaService
 
         $result = json_decode($response);
         return $result->success;
+    }
+
+    public function getName(): string
+    {
+        return 'reCaptcha';
+    }
+
+    public function getHomePageUrl(): string
+    {
+        return 'https://www.google.com/recaptcha/about/';
+    }
+
+    public function getDocumentationUrl(): string
+    {
+        return 'https://developers.google.com/recaptcha/docs/v3';
     }
 }
