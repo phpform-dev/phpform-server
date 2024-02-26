@@ -3,6 +3,7 @@ namespace App\Captcha;
 
 use App\Captcha\Providers\HCaptchaProvider;
 use App\Captcha\Providers\ReCaptchaProvider;
+use App\Captcha\Providers\ProcaptchaProvider;
 
 final class Captcha
 {
@@ -14,6 +15,7 @@ final class Captcha
     return [
       self::CAPTCHA_PROVIDER_RECAPTCHA => new ReCaptchaProvider(),
       self::CAPTCHA_PROVIDER_HCAPTCHA => new HCaptchaProvider(),
+      self::CAPTCHA_PROVIDER_PROCAPTCHA => new ProcaptchaProvider()
     ];
   }
 
