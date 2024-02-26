@@ -82,12 +82,12 @@
                         </li>
                         <li>
                             <a
-                                {% if current_path == 'admin_forms_recaptcha' %}
+                                {% if current_path == 'admin_forms_captcha' %}
                                     class="is-active"
                                 {% endif %}
-                                href="{{ path('admin_forms_recaptcha', {'id': formEntity.id}) }}"
+                                href="{{ path('admin_forms_captcha', {'id': formEntity.id}) }}"
                             >
-                                reCAPTCHA Protection
+                                Captcha Protection
                             </a>
                         </li>
                         <li>

@@ -45,15 +45,14 @@ class FormController extends AbstractController
                 return $this->json(['error' => 'Invalid request body'], 400);
             }
 
-            // Recaptcha validation
-            if($this->getParameter('env') === 'prod' && $form->isRecaptchaEnabled()) {
-                $recaptchaResponse = $data['recaptchaResponse'] ?? null;
-                if (!$recaptchaResponse) {
-                    return $this->json(['error' => 'Missing recaptcha response'], 400);
+            if($form->isCaptchaEnabled() && $this->getParameter('env') === 'prod') {
+                $captchaResponse = $data['captchaResponse'] ?? $data['recaptchaResponse'] ?? null;
+                if (!$captchaResponse) {
+                    return $this->json(['error' => 'Missing captcha response'], 400);
                 }
-                $recaptchaValidationResult = $this->reCaptchaService->validate($recaptchaResponse, $form->getRecaptchaToken(), $request->getClientIp());
-                if (!$recaptchaValidationResult) {
-                    return $this->json(['error' => 'Invalid recaptcha'], 400);
+                $captchaValidationResult = $this->reCaptchaService->validate($captchaResponse, $form->getCaptchaToken(), $request->getClientIp());
+                if (!$captchaValidationResult) {
+                    return $this->json(['error' => 'Invalid captcha'], 400);
                 }
             }
 

@@ -1,0 +1,65 @@
+{% extends '@Admin/forms/page.html.twig' %}
+
+{% block title %}API / {{ formEntity.name }} / Forms{% endblock %}
+
+{% block section %}
+    <div class="card">
+        <header class="card-header">
+            <p class="card-header-title">
+                Protect form with captcha
+            </p>
+        </header>
+        <div class="card-content" x-data="providersData()">
+            <div class="content">
+                <form method="post">
+                    {{ form_start(form) }}
+                    <p>
+                        Generate your Secret Key at <a target="_blank" :href="currentProvider.homepageUrl"><span x-html="currentProvider.name"></span></a>.
+                        Only the Secret Key is required here.
+                        Ensure to implement token retrieval on the frontend and include it in the PHPForm endpoint request under the 'captchaResponse' key.
+                    </p>
+                    {{ form_row(form.captcha_provider, {
+                        'attr': {'@change': 'change($event.target.value)'}
+                    }) }}
+                    {{ form_row(form.captcha_token) }}
+                    <p>
+                        Keep the field empty to disable Captcha Protection.
+                    </p>
+                    <p>
+                        Example of how to include the token in the request:
+                    </p>
+                    <div style="overflow:scroll; width:100%; max-width: 530px;" class="mb-4">
+                    <pre><code>fetch('https://your-domain.com/api/forms/{{ formEntity.hash }}', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+        captchaResponse: 'captcha-token-here',
+        // other form fields
+    }),
+})</code></pre>
+                    </div>
+                    <p>
+                        More information on how to use it can be found <a target="_blank" :href="currentProvider.documentationUrl">here</a>.
+                    </p>
+                    {{ form_row(form.save) }}
+                    {{ form_end(form) }}
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function providersData() {
+          const providers = {{ providersInfo|json_encode|raw }};
+          return {
+            providers,
+            currentProvider: providers[0],
+            change: function (value) {
+              this.currentProvider = providers[value];
+            }
+          };
+        }
+    </script>
+{% endblock %}

@@ -13,7 +13,7 @@ developers and businesses looking for a reliable and GDPR-compliant form managem
 - **Cost-Effective**: Designed to run smoothly on inexpensive hosting or free cloud services, reducing your operational costs.
 - **GDPR Compliant**: We prioritize your data privacy. PHPForm ensures that all your data remains yours, complying fully with GDPR regulations.
 - **Browser Push and Email notifications**: Get notified when a new form submission is received.
-- **reCaptcha Protection**: Protect your forms from spam and abuse with Google reCaptcha.
+- **Captcha Protection**: Protect your forms from spam and abuse with different Captcha providers.
 - **Token-based Protection**: Ideal protection for mobile and desktop apps.
 
 # Requirements

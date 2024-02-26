@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JsonSerializable;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Captcha\Captcha;
 
 #[ORM\Entity(repositoryClass: FormRepository::class)]
 #[ORM\Table(name: 'forms')]
@@ -17,6 +18,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Index(columns: ['deleted_at'], name: 'forms_deleted_at_idx')]
 class Form implements JsonSerializable
 {
+    const DEFAULT_CAPTCHA_PROVIDER = Captcha::CAPTCHA_PROVIDER_RECAPTCHA;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -41,8 +44,17 @@ class Form implements JsonSerializable
     #[ORM\OneToMany(mappedBy: 'form_id', targetEntity: FormField::class, orphanRemoval: true)]
     private Collection $fields;
 
+    /**
+     * @deprecated version 0.2.2 Use captcha_token instead
+     */
     #[ORM\Column(type: 'string', nullable: true)]
     private ?string $recaptcha_token = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $captcha_token = null;
+
+    #[ORM\Column(options: ['default' => self::DEFAULT_CAPTCHA_PROVIDER])]
+    private int $captcha_provider = self::DEFAULT_CAPTCHA_PROVIDER;
 
     #[ORM\Column(type: 'string', unique: true)]
     private ?string $hash = null;
@@ -179,14 +191,48 @@ class Form implements JsonSerializable
         return $this;
     }
 
+    /**
+     * @deprecated version 0.2.2 Use getCaptchaToken instead
+     */
     public function getRecaptchaToken(): ?string
     {
         return $this->recaptcha_token;
     }
 
+    /**
+     * @deprecated version 0.2.2 Use setCaptchaToken instead
+     */
     public function setRecaptchaToken(?string $recaptcha_token): static
     {
         $this->recaptcha_token = $recaptcha_token;
+
+        return $this;
+    }
+
+    public function getCaptchaToken(): ?string
+    {
+        return $this->captcha_token ?? $this->recaptcha_token ?? null;
+    }
+
+    public function setCaptchaToken(?string $captcha_token): static
+    {
+        $this->captcha_token = $captcha_token;
+
+        return $this;
+    }
+
+    public function getCaptchaProvider(): int
+    {
+        return $this->captcha_provider ?? self::DEFAULT_CAPTCHA_PROVIDER;
+    }
+
+    public function setCaptchaProvider(?int $captcha_provider): static
+    {
+        if ($captcha_provider === null) {
+            $captcha_provider = self::DEFAULT_CAPTCHA_PROVIDER;
+        }
+
+        $this->captcha_provider = $captcha_provider;
 
         return $this;
     }
@@ -215,9 +261,9 @@ class Form implements JsonSerializable
         return $this;
     }
 
-    public function isRecaptchaEnabled(): bool
+    public function isCaptchaEnabled(): bool
     {
-        return $this->getRecaptchaToken() !== null && strlen($this->getRecaptchaToken()) > 0;
+        return $this->getCaptchaToken() !== null && strlen($this->getCaptchaToken()) > 0;
     }
 
     public function isTokenEnabled(): bool
@@ -237,7 +283,7 @@ class Form implements JsonSerializable
             'name' => $this->getName(),
             'createdAt' => $this->getCreatedAt(),
             'deletedAt' => $this->getDeletedAt(),
-            'recaptchaToken' => $this->getRecaptchaToken(),
+            'captchaToken' => $this->getCaptchaToken(),
             'secret' => $this->getSecret(),
             'hash' => $this->getHash(),
         ];

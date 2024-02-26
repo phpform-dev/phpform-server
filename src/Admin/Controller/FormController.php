@@ -1,8 +1,10 @@
 <?php
 namespace App\Admin\Controller;
 
-use App\Admin\Form\FormRecaptchaType;
+use App\Admin\Form\FormCaptchaType;
 use App\Admin\Form\FormSecretType;
+use App\Captcha\Captcha;
+use App\Captcha\CaptchaProviderInterface;
 use App\Entity\Form;
 use App\Admin\Form\FormType;
 use App\Service\FormMenuCounterService;
@@ -20,6 +22,7 @@ class FormController extends AbstractController
         private readonly FormService $formService,
         private readonly FormMenuCounterService $formMenuCounterService,
         private readonly FormSubmissionService $formSubmissionService,
+        private readonly Captcha $captcha,
     )
     {
     }
@@ -75,24 +78,31 @@ class FormController extends AbstractController
         ]);
     }
 
-    #[Route('/admin/forms/{id}/recaptcha', name: 'admin_forms_recaptcha')]
-    public function recaptcha(Request $request, Form $formEntity): Response
+    #[Route('/admin/forms/{id}/captcha', name: 'admin_forms_captcha')]
+    public function captcha(Request $request, Form $formEntity): Response
     {
-        $form = $this->createForm(FormRecaptchaType::class, $formEntity);
+        $form = $this->createForm(FormCaptchaType::class, $formEntity);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->formService->edit($formEntity);
 
-            $this->addFlash('primary', 'Recaptcha Secret Key updated successfully');
+            $this->addFlash('primary', 'Captcha Secret Key updated successfully');
 
-            return $this->redirectToRoute('admin_forms_recaptcha', ['id' => $formEntity->getId()]);
+            return $this->redirectToRoute('admin_forms_captcha', ['id' => $formEntity->getId()]);
         }
 
-        return $this->render('@Admin/forms/recaptcha.html.twig', [
+        return $this->render('@Admin/forms/captcha.html.twig', [
             'form' => $form->createView(),
             'formEntity' => $formEntity,
             'menuCounts' => $this->formMenuCounterService->getAllCountsByFormId($formEntity->getId()),
+            'providersInfo' => array_map(static function(CaptchaProviderInterface $provider) {
+                return [
+                    'name' => $provider->getName(),
+                    'homepageUrl' => $provider->getHomePageUrl(),
+                    'documentationUrl' => $provider->getDocumentationUrl(),
+                ];
+            }, $this->captcha->getProviders())
         ]);
     }
 
