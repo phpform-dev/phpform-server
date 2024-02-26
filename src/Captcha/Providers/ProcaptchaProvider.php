@@ -48,6 +48,6 @@ class ProcaptchaProvider implements CaptchaProviderInterface
 
     public function getDocumentationUrl(): string
     {
-        return 'https://docs.prosopo.io/';
+        return 'https://github.com/prosopo/captcha/blob/main/README.md';
     }
 }
