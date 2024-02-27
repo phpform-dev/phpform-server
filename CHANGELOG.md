@@ -1,3 +1,11 @@
+0.2.3
+==
+27 Frb 2024
+
+**Added:**
+
+* Prosopo Procaptcha provider
+
 0.2.2
 ==
 26 Frb 2024
