@@ -5,6 +5,7 @@ class FormMenuCounterService {
     public function __construct(
         private readonly FormFieldService $formFieldService,
         private readonly FormSubmissionService $formSubmissionService,
+        private readonly FormWebhookService $formWebhookService,
     )
     {
     }
@@ -18,7 +19,8 @@ class FormMenuCounterService {
                 'new' => $this->getNewSubmissionCount($formId),
                 'flagged' => $this->getFlaggedSubmissionCount($formId),
                 'deleted' => $this->getDeletedSubmissionCount($formId),
-            ]
+            ],
+            'webhooks' => $this->formWebhookService->getCountByFormId($formId),
         ];
     }
 

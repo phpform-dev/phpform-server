@@ -1,6 +1,7 @@
 <?php
 namespace App\Service;
 
+use App\Entity\Submission;
 use App\Event\NewSubmissionEvent;
 use App\Repository\SubmissionRepository;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -140,11 +141,12 @@ readonly class FormSubmissionService
         $additionalHeaders = [];
 
         foreach ($submissions as $submission) {
-            foreach ($submission['answers'] as $answer) {
-                if (isset($additionalHeaders[$answer['field']])) {
+            /** @var Submission $submission */
+            foreach ($submission->getAnswers() as $field => $answer) {
+                if (isset($additionalHeaders[$field])) {
                     continue;
                 }
-                $additionalHeaders[$answer['field']] = ucfirst($answer['field']);
+                $additionalHeaders[$field] = ucfirst($field);
             }
         }
 
@@ -161,12 +163,11 @@ readonly class FormSubmissionService
 
             $rowAnswers = [];
             foreach ($additionalHeaders as $key => $header) {
-                $answer = array_filter($submission['answers'], fn($answer) => $answer['field'] === $key);
-                if (count($answer) === 0) {
+                $answer = $submission->getAnswers()[$key] ?? '';
+                if (empty($answer)) {
                     $rowAnswers[] = '';
                     continue;
                 }
-                $answer = array_values($answer)[0]['answer'];
                 if (is_array($answer)) {
                     $answer = implode(', ', $answer);
                 }
@@ -174,11 +175,11 @@ readonly class FormSubmissionService
             }
 
             $row = [
-                $submission['id'],
-                $submission['createdAt'],
-                $submission['isRead'] ? 'Yes' : 'No',
-                $submission['isFlagged'] ? 'Yes' : 'No',
-                $submission['isDeleted'] ? 'Yes' : 'No',
+                $submission->getId(),
+                $submission->getCreatedAt()->format('Y-m-d H:i:s'),
+                $submission->isRead() ? 'Yes' : 'No',
+                $submission->isFlagged() ? 'Yes' : 'No',
+                $submission->isDeleted() ? 'Yes' : 'No',
                 ...$rowAnswers,
             ];
 

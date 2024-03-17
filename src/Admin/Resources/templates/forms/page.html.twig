@@ -49,6 +49,28 @@
                     Settings
                 </p>
                 <ul class="menu-list">
+                    {% if app.user.isSuperUser %}
+                        <li>
+                            <a
+                                    {% if current_path == 'admin_forms_edit' %}
+                                        class="is-active"
+                                    {% endif %}
+                                    href="{{ path('admin_forms_edit', {'id': formEntity.id}) }}"
+                            >
+                                General
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                    {% if current_path starts with 'admin_forms_fields' %}
+                                        class="is-active"
+                                    {% endif %}
+                                    href="{{ path('admin_forms_fields', {'id': formEntity.id}) }}"
+                            >
+                                Fields ({{ menuCounts.fields }})
+                            </a>
+                        </li>
+                    {% endif %}
                     <li>
                         <a
                             {% if current_path == 'admin_forms_info' %}
@@ -72,16 +94,6 @@
                     {% if app.user.isSuperUser %}
                         <li>
                             <a
-                                {% if current_path == 'admin_forms_edit' %}
-                                    class="is-active"
-                                {% endif %}
-                                href="{{ path('admin_forms_edit', {'id': formEntity.id}) }}"
-                            >
-                                Edit
-                            </a>
-                        </li>
-                        <li>
-                            <a
                                 {% if current_path == 'admin_forms_captcha' %}
                                     class="is-active"
                                 {% endif %}
@@ -102,12 +114,12 @@
                         </li>
                         <li>
                             <a
-                                {% if current_path starts with 'admin_forms_fields' %}
-                                    class="is-active"
-                                {% endif %}
-                                href="{{ path('admin_forms_fields', {'id': formEntity.id}) }}"
+                                    {% if current_path == 'admin_forms_webhooks' %}
+                                        class="is-active"
+                                    {% endif %}
+                                    href="{{ path('admin_forms_webhooks', {'id': formEntity.id}) }}"
                             >
-                                Fields ({{ menuCounts.fields }})
+                                Webhooks ({{ menuCounts.webhooks }})
                             </a>
                         </li>
                         <li>

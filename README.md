@@ -1,10 +1,10 @@
-# PHPForm - Lightweight Headless Form Builder and API
+# PHPForm - Open Source Headless Form Management Server
 
 Welcome to PHPForm, a fully open-source, headless form builder designed with simplicity, efficiency, and privacy in mind. 
 Built to be easily installed on any budget-friendly hosting solution or free cloud tiers, PHPForm is the perfect choice for 
 developers and businesses looking for a reliable and GDPR-compliant form management solution.
 
-<img src="./public/images/screen.png" width="100%">
+<img src="./public/images/screen.png" width="100%" alt="Screenshot">
 
 # Features
 

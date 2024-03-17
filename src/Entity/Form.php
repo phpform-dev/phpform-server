@@ -44,6 +44,9 @@ class Form implements JsonSerializable
     #[ORM\OneToMany(mappedBy: 'form_id', targetEntity: FormField::class, orphanRemoval: true)]
     private Collection $fields;
 
+    #[ORM\OneToMany(mappedBy: 'form_id', targetEntity: FormWebhook::class, orphanRemoval: true)]
+    private Collection $webhooks;
+
     /**
      * @deprecated version 0.2.2 Use captcha_token instead
      */
@@ -169,28 +172,6 @@ class Form implements JsonSerializable
         return $this->fields;
     }
 
-    public function addField(FormField $field): static
-    {
-        if (!$this->fields->contains($field)) {
-            $this->fields->add($field);
-            $field->setForm($this);
-        }
-
-        return $this;
-    }
-
-    public function removeField(FormField $field): static
-    {
-        if ($this->fields->removeElement($field)) {
-            // set the owning side to null (unless already changed)
-            if ($field->getForm() === $this) {
-                $field->setForm(null);
-            }
-        }
-
-        return $this;
-    }
-
     /**
      * @deprecated version 0.2.2 Use getCaptchaToken instead
      */
@@ -269,6 +250,11 @@ class Form implements JsonSerializable
     public function isTokenEnabled(): bool
     {
         return $this->getSecret() !== null && strlen($this->getSecret()) > 0;
+    }
+
+    public function getWebhooks(): Collection
+    {
+        return $this->webhooks;
     }
 
     private function generateHash(): string
