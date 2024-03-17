@@ -1,0 +1,99 @@
+{% extends '@Admin/forms/page.html.twig' %}
+
+{% block title %}Webhooks / {{ formEntity.name }} / Forms{% endblock %}
+
+{% block section %}
+    {% if webhooks|length > 0  %}
+        <div>
+            {% for webhook in webhooks %}
+                <div class="box">
+                    <h6 class="has-text-weight-bold">URL:</h6>
+                    <div>
+                        {{ webhook.url }}
+                    </div>
+                    {% if webhook.headers|length > 0 %}
+                        <div class="mt-2">
+                            <h6 class="has-text-weight-bold mb-2">Headers:</h6>
+                            <div>
+                                {% for header in webhook.headers %}
+                                    <div class="mb-2">
+                                        <span class="tag is-light">
+                                            <strong>{{ header.name }}:</strong> {{ header.value }}
+                                        </span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="mt-3">
+                        <a class="tag is-rounded py-2 has-background-danger-light hoverable" href="{{ path('admin_forms_webhook_delete', { formId: formEntity.id, webhookId: webhook.id }) }}" title="Delete">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:16px; height: 16px;"><title/><path d="M21,6a1,1,0,0,1-1,1H4A1,1,0,0,1,4,5H9V4.5A1.5,1.5,0,0,1,10.5,3h3A1.5,1.5,0,0,1,15,4.5V5h5A1,1,0,0,1,21,6Z" fill="#464646"/><path d="M5.5,9v9.5A2.5,2.5,0,0,0,8,21h8a2.5,2.5,0,0,0,2.5-2.5V9ZM11,17a1,1,0,0,1-2,0V13a1,1,0,0,1,2,0Zm4,0a1,1,0,0,1-2,0V13a1,1,0,0,1,2,0Z" fill="#464646"/></svg>
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <div class="card mt-4" x-data="webhookForm()">
+        <header class="card-header">
+            <p class="card-header-title">
+                Add new Webhook
+            </p>
+        </header>
+        <div class="card-content">
+            <div class="content">
+                {{ form_start(form, {'attr': {'class': 'form'}}) }}
+                    <div class="field">
+                        {{ form_label(form.url, null, {'label_attr': {'class': 'label'}}) }}
+                        <div class="control">
+                            {{ form_widget(form.url, {'attr': {'class': 'input', 'placeholder': 'Webhook URL'}}) }}
+                        </div>
+                        {{ form_errors(form.url, {'attr': {'class': 'help is-danger'}}) }}
+                    </div>
+
+                    <div class="is-flex is-align-items-center is-justify-content-space-between mb-2">
+                        <h5>Headers</h5>
+                        <button type="button" class="button is-primary is-inverted" @click="addHeader()">Add Header</button>
+                    </div>
+
+                    <template x-for="(header, index) in headers" :key="index">
+                        <div class="mb-2 is-flex is-align-items-center">
+                            <div class="mr-3">
+                                <input type="text" :name="'form_webhook[headers][' + index + '][name]'" x-model="header.name" class="input" placeholder="Header Name" required minlength="1" maxlength="100">
+                            </div>
+                            <div class="mr-3">
+                                <input type="text" :name="'form_webhook[headers][' + index + '][value]'" x-model="header.value" class="input" placeholder="Header Value" required minlength="1" maxlength="255">
+                            </div>
+                            <div>
+                                <button type="button" class="button is-danger is-inverted" @click="removeHeader(index)">Remove</button>
+                            </div>
+                        </div>
+                    </template>
+
+                    <div class="field is-grouped mt-4">
+                        <div class="control">
+                            <button type="submit" class="button is-primary">Add Webhook</button>
+                        </div>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function webhookForm() {
+            return {
+                headers: [{
+                    name: '',
+                    value: ''
+                }],
+                addHeader() {
+                    this.headers.push({ name: '', value: '' });
+                },
+                removeHeader(index) {
+                    this.headers.splice(index, 1);
+                }
+            };
+        }
+    </script>
+{% endblock %}

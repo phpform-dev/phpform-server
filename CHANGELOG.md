@@ -1,3 +1,13 @@
+0.3.0
+==
+17 March 2024
+
+**Added:**
+* Webhooks support
+
+**Fixed:** 
+ * Export to Excel/CSV
+
 0.2.3
 ==
 27 Frb 2024

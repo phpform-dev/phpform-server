@@ -1,6 +1,19 @@
 {
     "type": "project",
-    "license": "proprietary",
+    "name": "phpform-dev/phpform-server",
+    "description": "PHPForm - Open Source Headless Form Management Server",
+    "keywords": [
+        "phpform",
+        "form",
+        "server",
+        "headless",
+        "api",
+        "symfony",
+        "php"
+    ],
+    "homepage": "http://phpform.dev",
+    "license": "MIT",
+    "version": "0.3.0",
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
@@ -13,6 +26,7 @@
         "doctrine/doctrine-bundle": "^2.11",
         "doctrine/doctrine-migrations-bundle": "^3.3",
         "doctrine/orm": "^2.17",
+        "guzzlehttp/guzzle": "^7.0",
         "minishlink/web-push": "^8.0",
         "phpoffice/phpspreadsheet": "^1.29",
         "symfony/console": "7.0.*",

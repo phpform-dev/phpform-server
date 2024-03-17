@@ -3,12 +3,14 @@ namespace App\EventSubscriber;
 
 use App\Event\NewSubmissionEvent;
 use App\Service\FormNotificationService;
+use App\Service\FormWebhookService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class SubmissionSubscriber implements EventSubscriberInterface
 {
     public function __construct(
         private readonly FormNotificationService $formNotificationService,
+        private readonly FormWebhookService $formWebhookService,
     )
     {
     }
@@ -23,6 +25,8 @@ class SubmissionSubscriber implements EventSubscriberInterface
     public function onNewSubmission(NewSubmissionEvent $event): void
     {
         $submission = $event->getSubmission();
-        $this->formNotificationService->sendAllByFormId($submission->getForm()->getId());
+        $form = $submission->getForm();
+        $this->formNotificationService->sendAllByFormId($form->getId());
+        $this->formWebhookService->callAllWebhooks($form, $submission);
     }
 }
