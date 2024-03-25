@@ -5,7 +5,8 @@
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+        <link rel="stylesheet" href="/admin-assets/bulma.min.css">
+        {% block head %}{% endblock %}
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
     <body class="p-5 container is-max-desktop" x-data="{ isMenuOpen: false }">
@@ -88,7 +89,7 @@
             {% block body %}{% endblock %}
         </div>
 
-        <script src="//unpkg.com/alpinejs" defer></script>
+        <script src="/admin-assets/alpinejs.min.js" defer></script>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 if ('serviceWorker' in navigator && 'PushManager' in window) {
@@ -122,5 +123,6 @@
                 });
             });
         </script>
+        {% block js %}{% endblock %}
     </body>
 </html>

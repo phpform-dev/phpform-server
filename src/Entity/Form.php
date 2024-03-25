@@ -65,6 +65,33 @@ class Form implements JsonSerializable
     #[ORM\Column(type: 'string', nullable: true)]
     private ?string $secret = null;
 
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    private bool $frontend_is_enabled = false;
+
+    #[ORM\Column(type: 'string', options: ['default' => 'blud'])]
+    private string $frontend_theme = 'blue';
+
+    #[ORM\Column(type: 'integer', options: ['default' => 0])]
+    private int $frontend_type = 0;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $frontend_captcha_site_key = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $frontend_head_html = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $frontend_disclaimer = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $frontend_confirmation_title = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $frontend_confirmation = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $frontend_confirmation_redirect = null;
+
     public function __construct()
     {
         $this->userPermissions = new ArrayCollection();
@@ -255,6 +282,114 @@ class Form implements JsonSerializable
     public function getWebhooks(): Collection
     {
         return $this->webhooks;
+    }
+
+    public function getFrontendIsEnabled(): bool
+    {
+        return $this->frontend_is_enabled;
+    }
+
+    public function setFrontendIsEnabled(bool $frontend_is_enabled): static
+    {
+        $this->frontend_is_enabled = $frontend_is_enabled;
+
+        return $this;
+    }
+
+    public function getFrontendTheme(): string
+    {
+        return $this->frontend_theme;
+    }
+
+    public function setFrontendTheme(string $frontend_theme): static
+    {
+        $this->frontend_theme = $frontend_theme;
+
+        return $this;
+    }
+
+    public function getFrontendType(): int
+    {
+        return $this->frontend_type;
+    }
+
+    public function setFrontendType(int $frontend_type): static
+    {
+        $this->frontend_type = $frontend_type;
+
+        return $this;
+    }
+
+    public function getFrontendCaptchaSiteKey(): ?string
+    {
+        return $this->frontend_captcha_site_key;
+    }
+
+    public function setFrontendCaptchaSiteKey(?string $frontend_captcha_site_key): static
+    {
+        $this->frontend_captcha_site_key = $frontend_captcha_site_key;
+
+        return $this;
+    }
+
+    public function getFrontendHeadHtml(): ?string
+    {
+        return $this->frontend_head_html;
+    }
+
+    public function setFrontendHeadHtml(?string $frontend_head_html): static
+    {
+        $this->frontend_head_html = $frontend_head_html;
+
+        return $this;
+    }
+
+    public function getFrontendDisclaimer(): ?string
+    {
+        return $this->frontend_disclaimer;
+    }
+
+    public function setFrontendDisclaimer(?string $frontend_disclaimer): static
+    {
+        $this->frontend_disclaimer = $frontend_disclaimer;
+
+        return $this;
+    }
+
+    public function getFrontendConfirmationTitle(): ?string
+    {
+        return $this->frontend_confirmation_title;
+    }
+
+    public function setFrontendConfirmationTitle(?string $frontend_confirmation_title): static
+    {
+        $this->frontend_confirmation_title = $frontend_confirmation_title;
+
+        return $this;
+    }
+
+    public function getFrontendConfirmation(): ?string
+    {
+        return $this->frontend_confirmation;
+    }
+
+    public function setFrontendConfirmation(?string $frontend_confirmation): static
+    {
+        $this->frontend_confirmation = $frontend_confirmation;
+
+        return $this;
+    }
+
+    public function getFrontendConfirmationRedirect(): ?string
+    {
+        return $this->frontend_confirmation_redirect;
+    }
+
+    public function setFrontendConfirmationRedirect(?string $frontend_confirmation_redirect): static
+    {
+        $this->frontend_confirmation_redirect = $frontend_confirmation_redirect;
+
+        return $this;
     }
 
     private function generateHash(): string

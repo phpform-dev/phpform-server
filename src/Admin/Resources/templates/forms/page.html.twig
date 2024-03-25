@@ -70,6 +70,16 @@
                                 Fields ({{ menuCounts.fields }})
                             </a>
                         </li>
+                        <li>
+                            <a
+                                    {% if current_path == 'admin_forms_frontend' %}
+                                        class="is-active"
+                                    {% endif %}
+                                    href="{{ path('admin_forms_frontend', {'id': formEntity.id}) }}"
+                            >
+                                Frontend
+                            </a>
+                        </li>
                     {% endif %}
                     <li>
                         <a

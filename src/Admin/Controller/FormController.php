@@ -3,10 +3,12 @@ namespace App\Admin\Controller;
 
 use App\Admin\Form\FormCaptchaType;
 use App\Admin\Form\FormSecretType;
+use App\Admin\Form\FrontendSettingsFormType;
 use App\Captcha\Captcha;
 use App\Captcha\CaptchaProviderInterface;
 use App\Entity\Form;
 use App\Admin\Form\FormType;
+use App\Frontend\Themes\ThemesProvider;
 use App\Service\FormMenuCounterService;
 use App\Service\FormService;
 use App\Service\FormSubmissionService;
@@ -170,6 +172,28 @@ class FormController extends AbstractController
 
         return $this->render('@Admin/forms/recover.html.twig', [
             'formEntity' => $formEntity,
+            'menuCounts' => $this->formMenuCounterService->getAllCountsByFormId($formEntity->getId()),
+        ]);
+    }
+
+    #[Route('/admin/forms/{id}/frontend', name: 'admin_forms_frontend')]
+    public function frontend(Request $request, Form $formEntity): Response
+    {
+        $form = $this->createForm(FrontendSettingsFormType::class, $formEntity);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->formService->edit($formEntity);
+
+            $this->addFlash('primary', 'Form updated successfully');
+
+            return $this->redirectToRoute('admin_forms_frontend', ['id' => $formEntity->getId()]);
+        }
+
+        return $this->render('@Admin/forms/frontend.html.twig', [
+            'form' => $form->createView(),
+            'formEntity' => $formEntity,
+            'frontendThemes' => (new ThemesProvider())->getThemes(),
             'menuCounts' => $this->formMenuCounterService->getAllCountsByFormId($formEntity->getId()),
         ]);
     }

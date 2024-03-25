@@ -1,0 +1,100 @@
+{% extends '@Admin/forms/page.html.twig' %}
+
+{% block title %}Frontend / {{ formEntity.name }} / Forms{% endblock %}
+
+{% block section %}
+<div class="card">
+    <header class="card-header">
+        <p class="card-header-title">
+            Frontend Configuration
+        </p>
+    </header>
+    <div class="card-content">
+        <div class="content">
+            {{ form_start(form, {'attr': {'class': 'form'}}) }}
+
+            {% if form.vars.errors|length > 0 %}
+                <div class="notification is-danger">
+                    There were errors with your submission.
+                </div>
+            {% endif %}
+
+            <div class="field box">
+                {{ form_widget(form.frontend_is_enabled, {'attr': {'class': 'checkbox has-text-weight-bold'}}) }}
+                <div class="mt-1">
+                    Use <a href="{{ app.request.getHttpHost() }}/forms/{{ formEntity.hash }}" target="_blank">this link</a> to share or access the form
+                </div>
+            </div>
+
+            <div class="field">
+                <label class="has-text-weight-bold">Theme</label>
+                <div x-data="{ selected: '{{ formEntity.frontendTheme }}' }" class="mt-2">
+                    <ul
+                        class="is-flex is-justify-content-flex-start is-align-items-center is-flex-wrap-wrap"
+                        style="list-style-type: none; padding: 0; margin: 0;"
+                    >
+                        {% for theme in frontendThemes %}
+                            <li
+                                class="frontend-theme-picker is-clickable box mr-2 mb-2"
+                                :style="'background-color: {{ theme.backgroundColor }}; border: {{ theme.primaryColor }} 4px solid; width: 32px; height: 32px; padding: 0; margin: 0;'"
+                                @click="selected = '{{ theme.name }}'"
+                            >
+                                <svg
+                                    x-show="selected === '{{ theme.name }}'"
+                                    fill="none"
+                                    viewBox="0 0 16 16"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    :style="'width: 100%; height: 100%; margin: 0; padding: 0; fill: {{ theme.primaryColor }}; stroke-width: 2px;'"
+                                >
+                                    <path clip-rule="evenodd" d="M15.4142 4.41421L6 13.8284L0.585785 8.41421L3.41421 5.58578L6 8.17157L12.5858 1.58578L15.4142 4.41421Z" fill-rule="evenodd" />
+                                </svg>
+                            </li>
+                        {% endfor %}
+                    </ul>
+
+                    {{ form_widget(form.frontend_theme, {'attr': {'x-model': 'selected', 'class': 'is-hidden'}}) }}
+                </div>
+            </div>
+
+            {{ form_row(form.frontend_type) }}
+
+            {{ form_row(form.frontend_captcha_site_key) }}
+
+            {{ form_row(form.frontend_head_html) }}
+
+            {{ form_row(form.frontend_disclaimer) }}
+
+            {{ form_row(form.frontend_confirmation_title) }}
+
+            {{ form_row(form.frontend_confirmation) }}
+
+            {{ form_row(form.frontend_confirmation_redirect) }}
+
+            <div class="field">
+                <div class="control">
+                    <button type="submit" class="button is-primary">Save</button>
+                </div>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+    <script src="/admin-assets/simplemde.min.js"></script>
+    <script>
+        new SimpleMDE({ element: document.getElementById("frontend_settings_form_frontend_disclaimer"), spellChecker: false });
+        new SimpleMDE({ element: document.getElementById("frontend_settings_form_frontend_confirmation"), spellChecker: false });
+    </script>
+{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="/admin-assets/simplemde.min.css">
+    <style>
+        .CodeMirror-line {
+            margin-bottom: 0 !important;
+        }
+    </style>
+{% endblock %}
